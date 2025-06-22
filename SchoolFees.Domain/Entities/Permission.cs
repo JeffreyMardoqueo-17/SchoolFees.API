@@ -14,10 +14,12 @@ namespace SchoolFees.Domain.Entities
         public Permission(string code, string description)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new ArgumentException("El código del permiso no puede estar vacío.");
+                throw new ArgumentException("El código del permiso no puede estar vacío.", nameof(code));
+            if (string.IsNullOrWhiteSpace(description))
+                throw new ArgumentException("La descripción del permiso no puede estar vacía.", nameof(description));
 
-            Code = code;
-            Description = description;
+            Code = code.Trim();
+            Description = description.Trim();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SchoolFees.Domain.Entities
         private readonly List<Permission> _permissions = new();
         public IReadOnlyCollection<Permission> Permissions => _permissions.AsReadOnly();
 
-        // Constructor requerido por EF Core
+        // Constructor
         private Role() { }
 
         // Constructor principal
@@ -35,10 +35,8 @@ namespace SchoolFees.Domain.Entities
         {
             if (_permissions.Exists(p => p.Code == permission.Code))
                 return;
-
             _permissions.Add(permission);
         }
-
         // Método para eliminar un permiso
         public void RemovePermission(string code)
         {

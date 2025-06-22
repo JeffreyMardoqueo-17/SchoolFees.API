@@ -2,8 +2,9 @@ using System;
 
 namespace SchoolFees.Domain.Entities
 {
-    /// <summary>
-    /// Representa a un usuario del sistema (estudiante, encargado, docente, etc.)
+     /// <summary>
+    /// Representa a un usuario del sistema (estudiante, encargado, docente, administrador, etc.).
+    /// Cada usuario está vinculado a una institución y a un rol, el cual define sus permisos.
     /// </summary>
     public class User
     {
@@ -15,9 +16,8 @@ namespace SchoolFees.Domain.Entities
         public string PhoneNumber { get; private set; } = string.Empty; // Teléfono
         public string Password { get; private set; } = string.Empty; // Contraseña encriptada
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow; // Fecha de creación
-
-        public string Role { get; private set; } = string.Empty; // Rol como texto (ej: "Student", "Admin", etc.)
-
+        public Guid RoleId { get; private set; }
+        public Role Role { get; private set; } = null!;
         public Guid InstitutionId { get; private set; }
         public Institution Institution { get; private set; } = null!;
 
@@ -46,11 +46,12 @@ namespace SchoolFees.Domain.Entities
         /// <summary>
         /// Asigna un rol al usuario (por ejemplo: "Student", "Admin", etc.)
         /// </summary>
-        public void AssignRole(string role)
+        public void AssignRole(Role role)
         {
-            if (string.IsNullOrWhiteSpace(role))
-                throw new ArgumentException("El rol no puede estar vacío.");
-            Role = role.Trim();
+            if (role == null)
+                throw new ArgumentException("El rol no puede ser nulo.", nameof(role));
+            Role = role;
+            RoleId = role.Id;
         }
 
         /// <summary>
