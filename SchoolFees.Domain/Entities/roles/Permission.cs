@@ -6,8 +6,8 @@ namespace SchoolFees.Domain.Entities
     public class Permission
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public string Code { get; private set; } // Identificador único como "PAYMENT_VIEW", "USER_CREATE"
-        public string Description { get; private set; }
+        public string? Code { get; private set; } // Identificador único como "PAYMENT_VIEW", "USER_CREATE"
+        public string? Description { get; private set; }
 
         private Permission() { }
 

@@ -10,8 +10,8 @@ namespace SchoolFees.Domain.Entities
     public class Role
     {
         public Guid Id { get; private set; } = Guid.NewGuid(); // Identificador único del rol
-        public string Name { get; private set; } // Nombre del rol (por ejemplo: "Admin", "Student", "Teacher")
-        public string Description { get; private set; } // Descripción opcional del rol
+        public string? Name { get; private set; } // Nombre del rol (por ejemplo: "Admin", "Student", "Teacher")
+        public string? Description { get; private set; } // Descripción opcional del rol
 
         // (Opcional) Lista de permisos si deseas implementar un sistema RBAC en el futuro
         private readonly List<Permission> _permissions = new();
