@@ -11,19 +11,25 @@ namespace SchoolFees.Domain.Entities
     /// </summary>
     public class Student
     {
-        public Guid Id { get; set; } = Guid.NewGuid(); //identificador para la institucion 
-        public Guid UserId { get; private set; } //identificador del usuario en el sistema de autenticacion
-        public Guid? CurrentGroupId { get; private set; } //identificador del grupo al que pertenece el estudiante, puede ser nulo si no esta asignado a ningun grupo
-        public DateTime EnrollmentDate { get; private set; } //fecha de inscripcion del estudiante
-        public bool IsActive { get; private set; } = true; //indica si el estudiante esta activo o inactivo
+        public Guid Id { get; set; } = Guid.NewGuid(); // ID del estudiante
+        public Guid UserId { get; private set; } // ID del usuario autenticado
+        public Guid? CurrentGroupId { get; private set; } // Grupo actual
+        public DateTime EnrollmentDate { get; private set; }
+        public bool IsActive { get; private set; } = true;
 
-        //constructor 
+        // === NUEVOS CAMPOS DE BECA ===
+        public bool HasScholarship => ScholarshipPercentage > 0;
+        public decimal ScholarshipPercentage { get; private set; } = 0; // 0 - 100
+        public Guid? SponsorId { get; private set; } // Persona o entidad que otorga la beca
+
+        // Constructor
         public Student(Guid userId, DateTime enrollmentDate)
         {
             UserId = userId;
             EnrollmentDate = enrollmentDate;
         }
-        //metodo para asignar un grupo al estudiante
+
+        // Asignar a grupo
         public void AssignToGroup(Guid grupId)
         {
             if (CurrentGroupId != null)
@@ -31,12 +37,29 @@ namespace SchoolFees.Domain.Entities
             CurrentGroupId = grupId;
         }
 
-        //metodo desactivar a un alumno
+        // Desactivar
         public void Deactivate()
         {
             if (!IsActive)
-                throw new InvalidOperationException("El estudiante ya esta inactivo.");
+                throw new InvalidOperationException("El estudiante ya está inactivo.");
             IsActive = false;
+        }
+
+        // === METODOS DE BECA ===
+
+        public void AssignScholarship(decimal percentage, Guid? sponsorId = null)
+        {
+            if (percentage < 0 || percentage > 100)
+                throw new ArgumentOutOfRangeException(nameof(percentage), "El porcentaje debe estar entre 0 y 100.");
+
+            ScholarshipPercentage = percentage;
+            SponsorId = sponsorId;
+        }
+
+        public void RemoveScholarship()
+        {
+            ScholarshipPercentage = 0;
+            SponsorId = null;
         }
     }
 }
