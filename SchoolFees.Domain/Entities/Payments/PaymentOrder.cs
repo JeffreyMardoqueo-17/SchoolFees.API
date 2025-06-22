@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SchoolFees.Domain.Entities.students;
 
 namespace SchoolFees.Domain.Entities.Payments
 {
@@ -17,7 +18,7 @@ namespace SchoolFees.Domain.Entities.Payments
         public Student? Student { get; private set; }
 
         // Calculado
-        public decimal TotalPaid => Payments.Sum(p => p.AmountPaid);
+        public decimal TotalPaid => Payments.Sum(p => p.TotalAmountPaid);
         public decimal AmountDue => DiscountedAmount - TotalPaid;
         public bool IsPaid => AmountDue <= 0;
 
@@ -30,8 +31,11 @@ namespace SchoolFees.Domain.Entities.Payments
             StudentId = student.Id;
             DueDate = dueDate;
             OriginalAmount = originalAmount;
-            DiscountedAmount = originalAmount * (1 - (student.ScholarshipPercentage / 100m));
+
+            decimal percentage = student.ScholarshipPolicy?.Percentage ?? 0m;
+            DiscountedAmount = originalAmount * (1 - (percentage / 100m));
         }
+
 
         public void AddPayment(Payment payment)
         {

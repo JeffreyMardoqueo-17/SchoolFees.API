@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SchoolFees.Domain.Entities
+namespace SchoolFees.Domain.Entities.students
 {
     /// <summary>
     /// Clase que representa un registro de cambio de beca para un estudiante.

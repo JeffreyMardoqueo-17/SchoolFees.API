@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SchoolFees.Domain.Entities
+namespace SchoolFees.Domain.Entities.students
 {
     /// <summary>
     /// Representa un patrocinador de becas o donaciones.
