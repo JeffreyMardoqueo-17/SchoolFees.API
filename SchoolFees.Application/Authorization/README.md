@@ -24,8 +24,8 @@ Definiremos todos los DTOs como `record class` (o `record struct` cuando el tipo
 **Ejemplo:**
 ```csharp
 public record StudentResponse(Guid Id, string FullName, string Grade);
-````
-**Ejemplo de estructura**
+```
+**Ejemplo de estructura request**
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -47,3 +47,24 @@ namespace SchoolFees.Application.users.DTOs
       Guid RoleId,
       Guid InstitutionId);
 }
+```
+**Ejemplo de estructura de tipo response**
+```csharp
+    
+/// <summary>
+/// Datos que se devuelven al consultar un usuario del sistema.
+/// </summary>
+public record UserResponse(
+    Guid     Id,
+    string   Name,
+    string   LastName,
+    string   Email,
+    string   PhoneNumber,
+    Guid     RoleId,
+    string   RoleName,
+    Guid     InstitutionId,
+    string   InstitutionName,
+    DateTime CreatedAt,
+    bool     IsActive);
+```
+---

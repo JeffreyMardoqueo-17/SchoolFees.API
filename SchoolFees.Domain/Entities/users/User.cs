@@ -2,7 +2,7 @@ using System;
 
 namespace SchoolFees.Domain.Entities
 {
-     /// <summary>
+    /// <summary>
     /// Representa a un usuario del sistema (estudiante, encargado, docente, administrador, etc.).
     /// Cada usuario está vinculado a una institución y a un rol, el cual define sus permisos.
     /// </summary>
@@ -21,7 +21,10 @@ namespace SchoolFees.Domain.Entities
         public Guid InstitutionId { get; private set; }
         public Institution Institution { get; private set; } = null!;
 
+        //el usuario puede estar activo o inactiv
         public bool IsActive { get; private set; } = true;
+        //para no eliminar 
+        public bool IsDeleted { get; private set; } = false;  // Soft‑delete flag
 
         // Constructor requerido por EF
         private User() { }
@@ -63,5 +66,21 @@ namespace SchoolFees.Domain.Entities
         /// Activa al usuario
         /// </summary>
         public void Activate() => IsActive = true;
+        /// <summary>
+        /// Marca al usuario como eliminado (soft delete)
+        /// </summary>
+        public void DeleteUser()
+        {
+            IsActive = false; // Opcional: desactivar al eliminar
+            IsDeleted = true;
+        }
+        /// <summary>
+        /// restablece un usuario eliminado
+        /// </summary>
+        public void RestoreUser()
+        {
+            IsActive = true;
+            IsDeleted = false;
+        }
     }
 }
