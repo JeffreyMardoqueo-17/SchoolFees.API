@@ -10,5 +10,6 @@ namespace SchoolFees.Application.users.Repositories
     {
         public Task<LoginRequest> UserLoginAsyn(LoginRequest loginRequest);
         public Task<bool> UserLogoutAsync(string userId);
+        
     }
 }
