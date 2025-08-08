@@ -1,5 +1,4 @@
 ﻿using SchoolFees.API.Models;
-namespace SchoolFees.API.Services;
 
 public interface ITipoPago
 {

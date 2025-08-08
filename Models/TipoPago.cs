@@ -7,6 +7,6 @@ namespace SchoolFees.API.Models
         public int Id { get; set; }
         [Required]
         [StringLength(100, ErrorMessage = "El maximo de caracteres es de 100")]
-        public string? Name { get; set; } = String.Empty();
+        public string? Name { get; set; }
     }
 }
