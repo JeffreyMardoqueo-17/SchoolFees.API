@@ -8,10 +8,10 @@ namespace SchoolFees.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TipoPagoController : Controller
+    public class TipoPagoController : ControllerBase
     {
         //agregar el servicio al constructor
-        private readonly ITipoPago? _tipoPagoService;
+        private readonly ITipoPago _tipoPagoService;
         private readonly IMapper _mapper;
         public TipoPagoController(ITipoPago tipoPago, IMapper mapper)
         {
@@ -30,15 +30,15 @@ namespace SchoolFees.API.Controllers
         }
 
         // GET: api/tipopago/{id}
-        [HttpGet("{id=int}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<TipoPagoReadDto>> GetTipoPagoById(int id)
         {
             var tipoPago = await _tipoPagoService.GetByIdTipoPagoAsync(id);
             if (tipoPago == null)
-                return NotFound();
+                return NotFound(new { message = $"No se encontro el tipo pago con el Id {id}" });
 
             var result = _mapper.Map<TipoPagoReadDto>(tipoPago);
-            return Ok(tipoPago);
+            return Ok(result);
         }
        
         // POST: api/tipopago
@@ -51,9 +51,11 @@ namespace SchoolFees.API.Controllers
             var tipoPagoEntity = _mapper.Map<TipoPago>(createDto);
             await _tipoPagoService.CreateTipoPagoAsync(tipoPagoEntity);
 
-            // Retornamos Created con la ruta para obtener el nuevo recurso
-            return CreatedAtAction(nameof(GetTipoPagoById), new { id = tipoPagoEntity.Id }, null);
+            var readDto = _mapper.Map<TipoPagoReadDto>(tipoPagoEntity); //esto es para que despues de creado, ahora devuelvo el dto de lectura
+            return CreatedAtAction(nameof(GetTipoPagoById), new { id = readDto.Id }, readDto);
+
         }
+        [HttpPut("{id:int}")]
         //PUT : api/tipopago/{id}
         public async Task<ActionResult> UpdateTipoPago(int id, [FromBody] TipoPagoUpdateDto updateDto)
         {
@@ -63,14 +65,14 @@ namespace SchoolFees.API.Controllers
             //validar que exista el que quiero actualizar
             var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id);
             if (tipoPagoExiste == null)
-                return NotFound();
+                return NotFound(new { message = $"No se encontro el tipo de pago con el Id : {id}" });
 
             // Mapear datos del DTO a la entidad existente para actualizarla
             _mapper.Map(updateDto, tipoPagoExiste);
             await _tipoPagoService.UpdateTipoPagoAsync(tipoPagoExiste);
             return NoContent();
         }
-
+        [HttpDelete("{id:int}")]
         //DELETE : api/tipopago/{id}
         public async Task<ActionResult> DeleteTipoPago(int id)
         {
@@ -78,7 +80,8 @@ namespace SchoolFees.API.Controllers
             var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id);
             //validar que no sea nullo
             if (tipoPagoExiste == null)
-                return NotFound();
+                return NotFound(new { message = $"No se encontró el TipoPago con id {id}" });
+
             //si existe y no es nullo, lo elimno
             await _tipoPagoService.DeleteTipoPago(id);
             //devuelve 204, que la operacion es exitosa pero no hay nada que devolver
