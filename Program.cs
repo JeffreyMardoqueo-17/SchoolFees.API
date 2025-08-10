@@ -1,7 +1,8 @@
 //agrego las depednecias para inyectar los servicios 
 using Microsoft.EntityFrameworkCore;
-using SchoolFees.API.Services;
+using Microsoft.Extensions.DependencyInjection;
 using SchoolFees.API.DataBase; 
+using SchoolFees.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ options.UseSqlServer(conectionString));
 
 //agregos los servicios
 builder.Services.AddAplicationServices();
+//automapes 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
