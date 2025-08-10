@@ -54,6 +54,36 @@ namespace SchoolFees.API.Controllers
             // Retornamos Created con la ruta para obtener el nuevo recurso
             return CreatedAtAction(nameof(GetTipoPagoById), new { id = tipoPagoEntity.Id }, null);
         }
+        //PUT : api/tipopago/{id}
+        public async Task<ActionResult> UpdateTipoPago(int id, [FromBody] TipoPagoUpdateDto updateDto)
+        {
+            //validar que se mande lo necesario
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            //validar que exista el que quiero actualizar
+            var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id);
+            if (tipoPagoExiste == null)
+                return NotFound();
+
+            // Mapear datos del DTO a la entidad existente para actualizarla
+            _mapper.Map(updateDto, tipoPagoExiste);
+            await _tipoPagoService.UpdateTipoPagoAsync(tipoPagoExiste);
+            return NoContent();
+        }
+
+        //DELETE : api/tipopago/{id}
+        public async Task<ActionResult> DeleteTipoPago(int id)
+        {
+            //verificar si existe
+            var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id);
+            //validar que no sea nullo
+            if (tipoPagoExiste == null)
+                return NotFound();
+            //si existe y no es nullo, lo elimno
+            await _tipoPagoService.DeleteTipoPago(id);
+            //devuelve 204, que la operacion es exitosa pero no hay nada que devolver
+            return NoContent();
+        }
 
     }
 }
