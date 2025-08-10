@@ -8,5 +8,6 @@ namespace SchoolFees.API.DataBase
 
         //agrego los db set
         public DbSet<TipoPago> TipoPago { get; set; } 
+        public DbSet<TipoDocumento> TipoDocumento { get; set; }
     }
 }
