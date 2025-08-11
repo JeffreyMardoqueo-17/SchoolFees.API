@@ -2,7 +2,7 @@
 {
     public record TipoDocReadDto
     (
-        int id,
-        string name 
+        int Id,
+        string Name 
     );
 }
