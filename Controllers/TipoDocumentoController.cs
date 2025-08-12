@@ -48,12 +48,12 @@ namespace SchoolFees.API.Controllers
             return CreatedAtAction(nameof(GetByIdTipoDocumento), new {id = readDto.Id} );
         }
 
-        //put : api/tipodocumento/{id}
-        [HttpPut]
-        public async Task<IActionResult> UpdateTipoDocumento(int id,[FromBody] TipoDocUpdateDto updateDto)
-        {
+        ////put : api/tipodocumento/{id}
+        //[HttpPut]
+        //public async Task<IActionResult> UpdateTipoDocumento(int id,[FromBody] TipoDocUpdateDto updateDto)
+        //{
 
-        }
+        //}
 
     }
 }
