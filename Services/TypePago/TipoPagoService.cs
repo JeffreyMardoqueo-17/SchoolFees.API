@@ -9,9 +9,12 @@ namespace SchoolFees.API.Services.TypePago
     public class TipoPagoService : ITipoPago
     {
         private readonly AplicationDBContext _context;
-        public TipoPagoService( AplicationDBContext aplicationDB)
+        private readonly ILogger<TipoPagoService> _logger;
+
+        public TipoPagoService( AplicationDBContext aplicationDB, ILogger<TipoPagoService> logger)
         {
             _context = aplicationDB;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<TipoPago>> GetAllTipoPagoAsinc()
@@ -30,6 +33,8 @@ namespace SchoolFees.API.Services.TypePago
         {
             if (tipoPago == null)
                 throw new ArgumentNullException(nameof(tipoPago), "No se puede crear un nullo");
+            if (string.IsNullOrWhiteSpace(tipoPago.Name))
+                throw new ArgumentException("El nombre del tipo de PAGO es obligatorio.", nameof(tipoPago));
             await _context.TipoPago.AddAsync(tipoPago);
             await _context.SaveChangesAsync();
         }
@@ -47,13 +52,50 @@ namespace SchoolFees.API.Services.TypePago
 
         public async Task UpdateTipoPagoAsync(TipoPago tipoPago)
         {
-            var TipoPagExiste = await GetByIdTipoPagoAsync(tipoPago.Id);
-            if (TipoPagExiste == null)
-                throw new KeyNotFoundException("El tipo de pago no existe, no hay que editar");
+            try
+            {
+                if (tipoPago == null)
+                    throw new ArgumentNullException(nameof(tipoPago), "No se puede crear un objeto nulo");
 
-            //si es que existe, edito uno por uno para no actualizar todo 
-            TipoPagExiste.Name = tipoPago.Name;
-            await _context.SaveChangesAsync();
+                if (tipoPago.Id <= 0)
+                    throw new ArgumentException("Id inválido, el Id debe ser mayor a 0", nameof(tipoPago.Id));
+
+                if (string.IsNullOrWhiteSpace(tipoPago.Name))
+                    throw new ArgumentException("El nombre del documento es obligatorio", nameof(tipoPago.Name));
+
+                var tipoPagExiste = await GetByIdTipoPagoAsync(tipoPago.Id);
+
+                // Actualizamos la entidad trackeada
+                tipoPagExiste.Name = tipoPago.Name;
+
+                await _context.SaveChangesAsync();
+            }
+            catch (ArgumentNullException ex)
+            {
+                _logger?.LogWarning(ex, "Objeto nulo recibido en UpdateTipoPagoAsync.");
+                // Se puede lanzar una excepción especifica o simplemente dejar que el controlador devuelva 400
+                throw new ArgumentNullException(nameof(tipoPago), "El objeto tipoPago no puede ser nulo.");
+            }
+
+            catch (ArgumentException ex)
+            {
+                _logger?.LogWarning(ex, "Argumento inválido en UpdateTipoPagoAsync: {Mensaje}", ex.Message);
+                throw new ArgumentException(ex.Message, ex.ParamName);
+            }
+
+            catch (KeyNotFoundException ex)
+            {
+                _logger?.LogWarning(ex, "TipoPago no encontrado en UpdateTipoPagoAsync: {Mensaje}", ex.Message);
+                throw new KeyNotFoundException(ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error inesperado actualizando TipoPago.");
+                throw new ApplicationException("Error inesperado actualizando TipoPago, contacte al administrador.", ex);
+            }
+
         }
+
     }
 }
