@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SchoolFees.API.DTOs.TipoDocumento;
-using SchoolFees.API.DTOs.TipoPago;
 using SchoolFees.API.Models;
 using SchoolFees.API.Services.TypeDocumento;
 
