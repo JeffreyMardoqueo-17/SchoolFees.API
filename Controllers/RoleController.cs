@@ -20,6 +20,7 @@ namespace SchoolFees.API.Controllers
             _mapper = mapper;
         }
         //get_ api/role
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Role>>> GetAllRole()
         {
             var roles = await _role.GetAllRoleAsync();
@@ -27,7 +28,18 @@ namespace SchoolFees.API.Controllers
 
             return Ok(result);
         }
+        //get: api/role/{id}
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Role>> GetRoleByIdAsync (int id)
+        {
+            var role = await _role.GetRoleByIdAsync(id);
+            if (role == null)
+                return NotFound(new { message = $"No se encontro ningun rol con este Id" });
 
-        
+            var result = _mapper.Map<Role>(role);
+            return Ok(result);
+        }
+
+
     }
 }
