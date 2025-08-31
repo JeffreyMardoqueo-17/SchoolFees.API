@@ -11,5 +11,6 @@ namespace SchoolFees.API.DataBase
         public DbSet<TipoDocumento> TipoDocumento { get; set; }
         public DbSet<Turno> Tuno { get; set; }
         public DbSet<Role> Role { get; set; }
+        public DbSet<TipoInstitucion> TipoInstitucion { get; set; }
     }
 }
