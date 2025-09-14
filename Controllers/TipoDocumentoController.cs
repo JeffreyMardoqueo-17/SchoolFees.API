@@ -6,6 +6,8 @@ using SchoolFees.API.Services.TypeDocumento;
 
 namespace SchoolFees.API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class TipoDocumentoController : ControllerBase
     {
         private readonly ITipoDocumento _tipoDocumentoService;
@@ -43,7 +45,7 @@ namespace SchoolFees.API.Controllers
             await _tipoDocumentoService.CreateTipoDocumentoAsync(tipoDocumentoEntity);
 
             var readDto = _mapper.Map<TipoDocReadDto>(tipoDocumentoEntity);
-            return CreatedAtAction(nameof(GetByIdTipoDocumento), new {id = readDto.Id} );
+            return CreatedAtAction(nameof(GetByIdTipoDocumento), new { id = readDto.Id });
         }
 
         ////put : api/tipodocumento/{id}

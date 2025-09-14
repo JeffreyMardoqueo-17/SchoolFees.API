@@ -1,45 +1,63 @@
-//agrego las depednecias para inyectar los servicios 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using SchoolFees.API.DataBase; 
+
+using SchoolFees.API.DataBase;
 using SchoolFees.API.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//agrego que soporte secretos de usaurio para no exponer mis claves
-var conectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// Add services to the container.
+// Conexión DB
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AplicationDBContext>(options =>
-options.UseSqlServer(conectionString));
+    options.UseSqlServer(connectionString));
 
-//agregos los servicios
+// Servicios y AutoMapper
 builder.Services.AddAplicationServices();
-//automapes 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Controladores
+builder.Services.AddControllers();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Swagger / OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("https://localhost:7116")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
+app.UseCors("AllowFrontend");
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();       // Genera JSON
+    app.UseSwaggerUI();     // UI de Swagger
 }
 
-app.UseHttpsRedirection();
+// Si quieres probar HTTP solo, comenta la redirección HTTPS
+// app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthorization();
 
+// Mapea tus controladores
+app.MapControllers();
+
+// Tu endpoint de prueba (opcional)
 app.MapGet("/weatherforecast", () =>
 {
+    var summaries = new[]
+    {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
@@ -49,8 +67,7 @@ app.MapGet("/weatherforecast", () =>
         ))
         .ToArray();
     return forecast;
-})
-.WithName("GetWeatherForecast");
+});
 
 app.Run();
 
