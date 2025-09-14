@@ -6,6 +6,8 @@ using SchoolFees.API.Services.Change;
 
 namespace SchoolFees.API.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class TurnoController : ControllerBase
     {
         private readonly ITurno _Service;
@@ -28,7 +30,7 @@ namespace SchoolFees.API.Controllers
         public async Task<ActionResult<TurnoReadDto>> GetByIdTurno(int id)
         {
             var turno = await _Service.GetByIdTurnoAsync(id);
-            if(turno == null)
+            if (turno == null)
                 NotFound(new { message = $"No se encontro ningun tipo de documento con este id: {id}" });
             var result = _mapper.Map<TurnoReadDto>(turno);
             return Ok(result);

@@ -26,6 +26,6 @@ namespace SchoolFees.API.Models
         public int IdTipoInstitucion { get; set; }
 
         [ForeignKey(nameof(IdTipoInstitucion))]
-        public TipoInstitucion TipoInstitucion { get; set; }
+        public TipoInstitucion TipoInstitucion { get; set; } = new TipoInstitucion();
     }
 }
