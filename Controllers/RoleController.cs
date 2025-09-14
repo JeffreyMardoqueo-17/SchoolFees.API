@@ -17,7 +17,7 @@ namespace SchoolFees.API.Controllers
         public RoleController(IRole role, IMapper mapper)
         {
             _role = role;
-            _mapper = mapper;
+            _mapper = mapper; 
         }
         //get_ api/role
         [HttpGet]
