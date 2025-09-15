@@ -3,6 +3,7 @@
     public record TipoPagoReadDto
     (
         int Id,
-        string Name
+        string Name,
+        Guid IdInstitucion
     );
 }

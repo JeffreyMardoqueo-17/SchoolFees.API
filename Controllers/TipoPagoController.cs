@@ -10,38 +10,44 @@ namespace SchoolFees.API.Controllers
     [Route("api/[controller]")]
     public class TipoPagoController : ControllerBase
     {
-        //agregar el servicio al constructor
         private readonly ITipoPago _tipoPagoService;
         private readonly IMapper _mapper;
+
         public TipoPagoController(ITipoPago tipoPago, IMapper mapper)
         {
             _tipoPagoService = tipoPago;
             _mapper = mapper;
         }
 
-        //get: api/tipopago
+        // GET: api/tipopago?institucionId={guid}
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoPagoReadDto>>> GetAllTipoPago()
+        public async Task<ActionResult<IEnumerable<TipoPagoReadDto>>> GetAllTipoPago([FromQuery] Guid institucionId)
         {
-            var tiposPagos = await _tipoPagoService.GetAllTipoPagoAsinc(); //metodo del service
-                        //_mapper.Map<Destino>(origen)
-            var result = _mapper.Map<IEnumerable<TipoPagoReadDto>>(tiposPagos); 
+            if (institucionId == Guid.Empty)
+                return BadRequest("Se debe proporcionar un Id de institución válido.");
+
+            var tiposPagos = await _tipoPagoService.GetAllTipoPagoAsinc(institucionId);
+            var result = _mapper.Map<IEnumerable<TipoPagoReadDto>>(tiposPagos);
             return Ok(result);
         }
 
-        // GET: api/tipopago/{id}
+
+        // GET: api/tipopago/{id}?institucionId={guid}
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<TipoPagoReadDto>> GetTipoPagoById(int id)
+        public async Task<ActionResult<TipoPagoReadDto>> GetTipoPagoById(int id, [FromQuery] Guid institucionId)
         {
-            var tipoPago = await _tipoPagoService.GetByIdTipoPagoAsync(id);
+            if (institucionId == Guid.Empty)
+                return BadRequest(new { message = "Se debe proporcionar un Id de institución válido." });
+
+            var tipoPago = await _tipoPagoService.GetByIdTipoPagoAsync(id, institucionId);
             if (tipoPago == null)
-                return NotFound(new { message = $"No se encontro el tipo pago con el Id {id}" });
+                return NotFound(new { message = $"No se encontró el tipo de pago con Id {id} para esta institución." });
 
             var result = _mapper.Map<TipoPagoReadDto>(tipoPago);
             return Ok(result);
         }
-       
-        // POST: api/tipopago
+
+        // POST: api/tipopago?institucionId={guid}
         [HttpPost]
         public async Task<ActionResult> CreateTipoPago([FromBody] TipoPagoCreateDto createDto)
         {
@@ -49,44 +55,44 @@ namespace SchoolFees.API.Controllers
                 return BadRequest(ModelState);
 
             var tipoPagoEntity = _mapper.Map<TipoPago>(createDto);
-            await _tipoPagoService.CreateTipoPagoAsync(tipoPagoEntity);
+            await _tipoPagoService.CreateTipoPagoAsync(tipoPagoEntity, createDto.IdInstitucion);
 
-            var readDto = _mapper.Map<TipoPagoReadDto>(tipoPagoEntity); //esto es para que despues de creado, ahora devuelvo el dto de lectura
+            var readDto = _mapper.Map<TipoPagoReadDto>(tipoPagoEntity);
             return CreatedAtAction(nameof(GetTipoPagoById), new { id = readDto.Id }, readDto);
-
         }
+
+        // PUT: api/tipopago/{id}?institucionId={guid}
         [HttpPut("{id:int}")]
-        //PUT : api/tipopago/{id}
-        public async Task<ActionResult> UpdateTipoPago(int id, [FromBody] TipoPagoUpdateDto updateDto)
+        public async Task<ActionResult> UpdateTipoPago(int id, [FromBody] TipoPagoUpdateDto updateDto, [FromQuery] Guid institucionId)
         {
-            //validar que se mande lo necesario
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            //validar que exista el que quiero actualizar
-            var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id);
-            if (tipoPagoExiste == null)
-                return NotFound(new { message = $"No se encontro el tipo de pago con el Id : {id}" });
 
-            // Mapear datos del DTO a la entidad existente para actualizarla
+            if (institucionId == Guid.Empty)
+                return BadRequest(new { message = "Se debe proporcionar un Id de institución válido." });
+
+            var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id, institucionId);
+            if (tipoPagoExiste == null)
+                return NotFound(new { message = $"No se encontró el tipo de pago con Id {id} para esta institución." });
+
             _mapper.Map(updateDto, tipoPagoExiste);
-            await _tipoPagoService.UpdateTipoPagoAsync(tipoPagoExiste);
+            await _tipoPagoService.UpdateTipoPagoAsync(tipoPagoExiste, institucionId);
             return NoContent();
         }
+
+        // DELETE: api/tipopago/{id}?institucionId={guid}
         [HttpDelete("{id:int}")]
-        //DELETE : api/tipopago/{id}
-        public async Task<ActionResult> DeleteTipoPago(int id)
+        public async Task<ActionResult> DeleteTipoPago(int id, [FromQuery] Guid institucionId)
         {
-            //verificar si existe
-            var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id);
-            //validar que no sea nullo
-            if (tipoPagoExiste == null)
-                return NotFound(new { message = $"No se encontró el TipoPago con id {id}" });
+            if (institucionId == Guid.Empty)
+                return BadRequest(new { message = "Se debe proporcionar un Id de institución válido." });
 
-            //si existe y no es nullo, lo elimno
-            await _tipoPagoService.DeleteTipoPago(id);
-            //devuelve 204, que la operacion es exitosa pero no hay nada que devolver
+            var tipoPagoExiste = await _tipoPagoService.GetByIdTipoPagoAsync(id, institucionId);
+            if (tipoPagoExiste == null)
+                return NotFound(new { message = $"No se encontró el tipo de pago con Id {id} para esta institución." });
+
+            await _tipoPagoService.DeleteTipoPago(id, institucionId);
             return NoContent();
         }
-
     }
 }
