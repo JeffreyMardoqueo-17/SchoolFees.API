@@ -7,10 +7,11 @@ namespace SchoolFees.API.DataBase
         public AplicationDBContext(DbContextOptions<AplicationDBContext> options) : base(options) { }
 
         //agrego los db set
-        public DbSet<TipoPago> TipoPago { get; set; } 
+        public DbSet<TipoPago> TipoPago { get; set; }
         public DbSet<TipoDocumento> TipoDocumento { get; set; }
         public DbSet<Turno> Tuno { get; set; }
         public DbSet<Role> Role { get; set; }
         public DbSet<TipoInstitucion> TipoInstitucion { get; set; }
+        public DbSet<Institucion> Institucion { get; set; }
     }
 }
