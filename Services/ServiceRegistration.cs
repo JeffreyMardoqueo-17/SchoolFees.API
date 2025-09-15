@@ -14,12 +14,13 @@ namespace SchoolFees.API.Services
         public static void AddAplicationServices(this IServiceCollection services)
         {
             //services.addScoped<Interfaz, servicio>();
-                    //... Servicios de clases sin llaves foraneas
+            //... Servicios de clases sin llaves foraneas
             services.AddScoped<ITipoDocumento, TipoDocumentoService>();
             services.AddScoped<ITipoPago, TipoPagoService>();
             services.AddScoped<ITipeInstitution, TipoInsititucionService>();
             services.AddScoped<IRole, RoleService>();
             services.AddScoped<ITurno, TurnoService>();
+            services.AddScoped<ITipeInstitution, TipoInsititucionService>();
 
             //........... Servicio de las clases con llaves foraneas
             //services.AddScoped<>;
