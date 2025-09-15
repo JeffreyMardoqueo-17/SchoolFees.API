@@ -2,6 +2,7 @@
 using SchoolFees.API.Models;
 using SchoolFees.API.Services;
 using SchoolFees.API.Services.Change;
+using SchoolFees.API.Services.Institution;
 using SchoolFees.API.Services.Roles;
 using SchoolFees.API.Services.TypeDocumento;
 using SchoolFees.API.Services.TypeInstitution;
@@ -21,7 +22,9 @@ namespace SchoolFees.API.Services
             services.AddScoped<IRole, RoleService>();
             services.AddScoped<ITurno, TurnoService>();
             services.AddScoped<ITipeInstitution, TipoInsititucionService>();
+            services.AddScoped<IInstitucion, InstitucionService>();
 
+            
             //........... Servicio de las clases con llaves foraneas
             //services.AddScoped<>;
         }
