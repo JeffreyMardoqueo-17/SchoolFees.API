@@ -1,33 +1,31 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SchoolFees.API.DTOs.Institucion
 {
-    public record class InstitucionUpdateDto(
-        [property: Required(ErrorMessage = "El Id es obligatorio")]
-        Guid Id,
+    public class InstitucionUpdateDto
+    {
+        [Required(ErrorMessage = "El Id es obligatorio")]
+        public Guid Id { get; set; }
 
-        [property: Required(ErrorMessage = "El nombre es obligatorio")]
-        [property: StringLength(150, ErrorMessage = "El nombre no puede superar los 150 caracteres")]
-        string Name,
+        [Required(ErrorMessage = "El nombre es obligatorio")]
+        [StringLength(150, ErrorMessage = "El nombre no puede superar los 150 caracteres")]
+        public string Name { get; set; } = string.Empty;
 
-        [property: Required(ErrorMessage = "La dirección es obligatoria")]
-        [property: StringLength(250, ErrorMessage = "La dirección no puede superar los 250 caracteres")]
-        string Address,
+        [Required(ErrorMessage = "La dirección es obligatoria")]
+        [StringLength(250, ErrorMessage = "La dirección no puede superar los 250 caracteres")]
+        public string Address { get; set; } = string.Empty;
 
-        [property: Phone(ErrorMessage = "El teléfono no es válido")]
-        [property: StringLength(20, ErrorMessage = "El teléfono no puede superar los 20 caracteres")]
-        string Phone,
+        [Phone(ErrorMessage = "El teléfono no es válido")]
+        [StringLength(20, ErrorMessage = "El teléfono no puede superar los 20 caracteres")]
+        public string Phone { get; set; } = string.Empty;
 
-        [property: Required(ErrorMessage = "El email es obligatorio")]
-        [property: EmailAddress(ErrorMessage = "El email no es válido")]
-        [property: StringLength(100, ErrorMessage = "El email no puede superar los 100 caracteres")]
-        string Email,
+        [Required(ErrorMessage = "El email es obligatorio")]
+        [EmailAddress(ErrorMessage = "El email no es válido")]
+        [StringLength(100, ErrorMessage = "El email no puede superar los 100 caracteres")]
+        public string Email { get; set; } = string.Empty;
 
-        [property: Required(ErrorMessage = "El tipo de institución es obligatorio")]
-        int IdTipoInstitucion
-    );
+        [Required(ErrorMessage = "El tipo de institución es obligatorio")]
+        public int IdTipoInstitucion { get; set; }
+    }
 }

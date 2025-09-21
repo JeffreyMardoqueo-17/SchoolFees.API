@@ -48,9 +48,22 @@ namespace SchoolFees.API.Services.Institution
             if (institucion == null)
                 throw new ArgumentNullException(nameof(institucion));
 
+            // Normalizar teléfono: quitar espacios, guiones, paréntesis y asegurar que empieza con 503
+            institucion.Phone = institucion.Phone.Replace(" ", "")
+                                                 .Replace("-", "")
+                                                 .Replace("(", "")
+                                                 .Replace(")", "");
+
+            if (!institucion.Phone.StartsWith("503"))
+            {
+                // Si el usuario ingresó un teléfono sin código de país, se lo agregamos
+                institucion.Phone = "503" + institucion.Phone;
+            }
+
             await _context.Institucion.AddAsync(institucion);
             await _context.SaveChangesAsync();
         }
+
 
         // Actualizar institución
         public async Task UpdateInstitucionAsync(Institucion institucion)
