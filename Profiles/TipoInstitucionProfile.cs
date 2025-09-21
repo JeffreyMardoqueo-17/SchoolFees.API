@@ -1,6 +1,6 @@
 using AutoMapper;
 using SchoolFees.API.Models;
-using SchoolFees.API.DTOs.TipoInsititution;
+using SchoolFees.API.DTOs.TipoInstitucion;
 
 namespace SchoolFees.API.Profiles
 {

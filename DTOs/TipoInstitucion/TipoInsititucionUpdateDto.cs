@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SchoolFees.API.DTOs.TipoInsititution
+namespace SchoolFees.API.DTOs.TipoInstitucion
 {
     public record class TipoInstitucionUpdateDto(
         [property: Required(ErrorMessage = "El nombre es requerido")]
