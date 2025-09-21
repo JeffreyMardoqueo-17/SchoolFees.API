@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SchoolFees.API.DTOs.TipoInsititution;
 
 namespace SchoolFees.API.DTOs.Institucion
 {
@@ -12,6 +10,6 @@ namespace SchoolFees.API.DTOs.Institucion
          string Phone,
          string Email,
          int IdTipoInstitucion,
-         string TipoInstitucionName
+         TipoInstitucionReadDto TipoInstitucion
      );
 }

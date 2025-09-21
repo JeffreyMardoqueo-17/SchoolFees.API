@@ -27,7 +27,10 @@ namespace SchoolFees.API.Controllers
         public async Task<ActionResult<IEnumerable<InstitucionReadDto>>> GetAllInstituciones()
         {
             var instituciones = await _institucionService.GetAllInstitucionesAsync();
+
+            // Mapear a DTOs
             var result = _mapper.Map<IEnumerable<InstitucionReadDto>>(instituciones);
+
             return Ok(result);
         }
 

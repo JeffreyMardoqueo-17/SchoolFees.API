@@ -1,6 +1,7 @@
 using AutoMapper;
 using SchoolFees.API.Models;
 using SchoolFees.API.DTOs.Institucion;
+using SchoolFees.API.DTOs.TipoInsititution;
 
 namespace SchoolFees.API.Profiles
 {
@@ -8,20 +9,16 @@ namespace SchoolFees.API.Profiles
     {
         public InstitucionProfile()
         {
-            // Lectura: Institucion -> InstitucionReadDto
-            CreateMap<Institucion, InstitucionReadDto>()
-                .ForCtorParam("Id", opt => opt.MapFrom(src => src.Id))
-                .ForCtorParam("Name", opt => opt.MapFrom(src => src.Name ?? string.Empty))
-                .ForCtorParam("Address", opt => opt.MapFrom(src => src.Address ?? string.Empty))
-                .ForCtorParam("Phone", opt => opt.MapFrom(src => src.Phone ?? string.Empty))
-                .ForCtorParam("Email", opt => opt.MapFrom(src => src.Email ?? string.Empty))
-                .ForCtorParam("IdTipoInstitucion", opt => opt.MapFrom(src => src.IdTipoInstitucion))
-                .ForCtorParam("TipoInstitucionName", opt => opt.MapFrom(src => src.TipoInstitucion.Name ?? string.Empty));
+            // Lectura
+            CreateMap<Institucion, InstitucionReadDto>();
 
-            // Creación: InstitucionCreateDto -> Institucion
+            // Relación
+            CreateMap<TipoInstitucion, TipoInstitucionReadDto>();
+
+            // Creación
             CreateMap<InstitucionCreateDto, Institucion>();
 
-            // Actualización: InstitucionUpdateDto -> Institucion
+            // Actualización
             CreateMap<InstitucionUpdateDto, Institucion>();
         }
     }
