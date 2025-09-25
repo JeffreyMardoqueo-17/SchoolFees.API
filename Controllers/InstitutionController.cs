@@ -23,7 +23,6 @@ namespace SchoolFees.API.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/institucion
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InstitucionReadDto>>> GetAllInstituciones()
         {
@@ -32,9 +31,20 @@ namespace SchoolFees.API.Controllers
             if (!result.Success)
                 return NotFound(new { message = result.Message });
 
-            var dtos = _mapper.Map<IEnumerable<InstitucionReadDto>>(result.Data);
+            // Proyección directa a DTO
+            var dtos = (result.Data ?? new List<Institucion>()).Select(i => new InstitucionReadDto
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Address = i.Address,
+                Phone = i.Phone,
+                Email = i.Email,
+                TipoInstitucionName = i.TipoInstitucion?.Name ?? string.Empty
+            });
+
             return Ok(dtos);
         }
+
 
         // GET: api/institucion/{id}
         [HttpGet("{id:guid}")]
