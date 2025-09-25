@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolFees.API.DTOs.Institucion;
 using SchoolFees.API.Models;
 using SchoolFees.API.Services.Institution;
+using SchoolFees.API.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,77 +27,75 @@ namespace SchoolFees.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InstitucionReadDto>>> GetAllInstituciones()
         {
-            var instituciones = await _institucionService.GetAllInstitucionesAsync();
+            var result = await _institucionService.GetAllInstitucionesAsync();
 
-            // Mapear a DTOs
-            var result = _mapper.Map<IEnumerable<InstitucionReadDto>>(instituciones);
+            if (!result.Success)
+                return NotFound(new { message = result.Message });
 
-            return Ok(result);
+            var dtos = _mapper.Map<IEnumerable<InstitucionReadDto>>(result.Data);
+            return Ok(dtos);
         }
 
         // GET: api/institucion/{id}
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<InstitucionReadDto>> GetInstitucionById(Guid id)
         {
-            try
-            {
-                var institucion = await _institucionService.GetInstitucionByIdAsync(id);
-                var result = _mapper.Map<InstitucionReadDto>(institucion);
-                return Ok(result);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"No se encontró la institución con Id {id}" });
-            }
+            var result = await _institucionService.GetInstitucionByIdAsync(id);
+
+            if (!result.Success)
+                return NotFound(new { message = result.Message });
+
+            var dto = _mapper.Map<InstitucionReadDto>(result.Data);
+            return Ok(dto);
         }
 
         // POST: api/institucion
         [HttpPost]
-        public async Task<ActionResult> CreateInstitucion([FromBody] InstitucionCreateDto createDto)
+        public async Task<ActionResult<InstitucionReadDto>> CreateInstitucion([FromBody] InstitucionCreateDto createDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var institucionEntity = _mapper.Map<Institucion>(createDto);
-            await _institucionService.CreateInstitucionAsync(institucionEntity);
+            var result = await _institucionService.CreateInstitucionAsync(institucionEntity);
 
-            var readDto = _mapper.Map<InstitucionReadDto>(institucionEntity);
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
+            var readDto = _mapper.Map<InstitucionReadDto>(result.Data);
             return CreatedAtAction(nameof(GetInstitucionById), new { id = readDto.Id }, readDto);
         }
 
         // PUT: api/institucion/{id}
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult> UpdateInstitucion(Guid id, [FromBody] InstitucionUpdateDto updateDto)
+        public async Task<ActionResult<InstitucionReadDto>> UpdateInstitucion(Guid id, [FromBody] InstitucionUpdateDto updateDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                var institucion = await _institucionService.GetInstitucionByIdAsync(id);
-                _mapper.Map(updateDto, institucion);
-                await _institucionService.UpdateInstitucionAsync(institucion);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"No se encontró la institución con Id {id}" });
-            }
+            if (id != updateDto.Id)
+                return BadRequest(new { message = "El Id de la URL no coincide con el Id del body" });
+
+            var institucion = _mapper.Map<Institucion>(updateDto);
+            var result = await _institucionService.UpdateInstitucionAsync(institucion);
+
+            if (!result.Success)
+                return NotFound(new { message = result.Message });
+
+            var readDto = _mapper.Map<InstitucionReadDto>(result.Data);
+            return Ok(readDto);
         }
 
         // DELETE: api/institucion/{id}
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteInstitucion(Guid id)
         {
-            try
-            {
-                await _institucionService.DeleteInstitucionAsync(id);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = $"No se encontró la institución con Id {id}" });
-            }
+            var result = await _institucionService.DeleteInstitucionAsync(id);
+
+            if (!result.Success)
+                return NotFound(new { message = result.Message });
+
+            return NoContent();
         }
     }
 }

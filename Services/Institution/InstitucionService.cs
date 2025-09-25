@@ -5,6 +5,7 @@ using SchoolFees.API.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SchoolFees.API.Helpers;
 
 namespace SchoolFees.API.Services.Institution
 {
@@ -20,16 +21,21 @@ namespace SchoolFees.API.Services.Institution
         }
 
         // Obtener todas las instituciones
-        public async Task<IEnumerable<Institucion>> GetAllInstitucionesAsync()
+        public async Task<Result<IEnumerable<Institucion>>> GetAllInstitucionesAsync()
         {
-            return await _context.Institucion
-                                .AsNoTracking()
-                                .Include(i => i.TipoInstitucion)
-                                .ToListAsync();
+            var instituciones = await _context.Institucion
+                                              .AsNoTracking()
+                                              .Include(i => i.TipoInstitucion)
+                                              .ToListAsync();
+
+            if (!instituciones.Any())
+                return Result<IEnumerable<Institucion>>.Fail("No se encontraron instituciones");
+
+            return Result<IEnumerable<Institucion>>.Ok(instituciones);
         }
 
         // Obtener una institución por Id
-        public async Task<Institucion> GetInstitucionByIdAsync(Guid id)
+        public async Task<Result<Institucion>> GetInstitucionByIdAsync(Guid id)
         {
             var institucion = await _context.Institucion
                                             .AsNoTracking()
@@ -37,41 +43,52 @@ namespace SchoolFees.API.Services.Institution
                                             .FirstOrDefaultAsync(i => i.Id == id);
 
             if (institucion == null)
-                throw new KeyNotFoundException($"No se encontró la institución con Id {id}");
+                return Result<Institucion>.Fail($"No se encontró la institución con Id {id}");
 
-            return institucion;
+            return Result<Institucion>.Ok(institucion);
         }
 
+
         // Crear institución
-        public async Task CreateInstitucionAsync(Institucion institucion)
+        public async Task<Result<Institucion>> CreateInstitucionAsync(Institucion institucion)
         {
             if (institucion == null)
-                throw new ArgumentNullException(nameof(institucion));
+                return Result<Institucion>.Fail("El objeto institución es nulo");
 
-            // Normalizar teléfono: quitar espacios, guiones, paréntesis y asegurar que empieza con 503
+            // Normalizar teléfono
             institucion.Phone = institucion.Phone.Replace(" ", "")
                                                  .Replace("-", "")
                                                  .Replace("(", "")
                                                  .Replace(")", "");
 
             if (!institucion.Phone.StartsWith("503"))
-            {
-                // Si el usuario ingresó un teléfono sin código de país, se lo agregamos
                 institucion.Phone = "503" + institucion.Phone;
-            }
+
+            // Validar duplicados por nombre (opcional)
+            var existe = await _context.Institucion.AnyAsync(i => i.Name == institucion.Name);
+            if (existe)
+                return Result<Institucion>.Fail("Ya existe una institución con el mismo nombre");
 
             await _context.Institucion.AddAsync(institucion);
             await _context.SaveChangesAsync();
+
+            return Result<Institucion>.Ok(institucion);
         }
 
 
+
         // Actualizar institución
-        public async Task UpdateInstitucionAsync(Institucion institucion)
+        public async Task<Result<Institucion>> UpdateInstitucionAsync(Institucion institucion)
         {
             if (institucion == null)
-                throw new ArgumentNullException(nameof(institucion));
+                return Result<Institucion>.Fail("El objeto institucion es nulo");
 
-            var existing = await GetInstitucionByIdAsync(institucion.Id);
+            var result = await GetInstitucionByIdAsync(institucion.Id);
+
+            if (!result.Success)
+                return Result<Institucion>.Fail(result.Message!);
+
+            var existing = result.Data!;
 
             existing.Name = institucion.Name;
             existing.Address = institucion.Address;
@@ -80,14 +97,27 @@ namespace SchoolFees.API.Services.Institution
             existing.IdTipoInstitucion = institucion.IdTipoInstitucion;
 
             await _context.SaveChangesAsync();
+
+            return Result<Institucion>.Ok(existing);
         }
 
+
         // Eliminar institución
-        public async Task DeleteInstitucionAsync(Guid id)
+        public async Task<Result<Institucion>> DeleteInstitucionAsync(Guid id)
         {
-            var institucion = await GetInstitucionByIdAsync(id);
-            _context.Institucion.Remove(institucion);
+            // Obtener el resultado
+            var result = await GetInstitucionByIdAsync(id);
+
+            if (!result.Success)
+                return Result<Institucion>.Fail(result.Message!);
+
+            var existing = result.Data!; // Extraemos la entidad real
+
+            _context.Institucion.Remove(existing);
             await _context.SaveChangesAsync();
+
+            return Result<Institucion>.Ok(existing);
         }
+
     }
 }
