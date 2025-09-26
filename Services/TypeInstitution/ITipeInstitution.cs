@@ -6,6 +6,8 @@ namespace SchoolFees.API.Services.TypeInstitution
     {
         Task<IEnumerable<TipoInstitucion>> GetAllTipoInsititucion();
         Task<TipoInstitucion> GetByIdTipoInstitucion(int id);
+        //metodo para eliminar
+        Task<bool> DeleteTipoInstitucion(int id);
 
     }
 }

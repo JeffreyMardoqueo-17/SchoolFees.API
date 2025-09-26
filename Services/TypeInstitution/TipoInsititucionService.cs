@@ -34,5 +34,22 @@ namespace SchoolFees.API.Services.TypeInstitution
 
             return tipoInstitucion;
         }
+        public async Task<bool> DeleteTipoInstitucion(int id)
+        {
+            if (id <= 0)
+                return false; // Id inválido
+
+            var tipoInstitucion = await _context.TipoInstitucion
+                .FirstOrDefaultAsync(ti => ti.Id == id);
+
+            if (tipoInstitucion == null)
+                return false; // No encontrado
+
+            _context.TipoInstitucion.Remove(tipoInstitucion);
+            var changes = await _context.SaveChangesAsync();
+
+            return changes > 0;
+        }
+
     }
 }

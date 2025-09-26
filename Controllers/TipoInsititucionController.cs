@@ -49,5 +49,14 @@ namespace SchoolFees.API.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var result = await _service.DeleteTipoInstitucion(id);
+            if (!result)
+                return NotFound(new { message = $"No se encontró el tipo de institución con Id {id}" });
+
+            return NoContent();
+        }
     }
 }

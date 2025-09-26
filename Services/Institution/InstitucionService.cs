@@ -52,29 +52,52 @@ namespace SchoolFees.API.Services.Institution
         // Crear institución
         public async Task<Result<Institucion>> CreateInstitucionAsync(Institucion institucion)
         {
+            // Validación de nulos
             if (institucion == null)
                 return Result<Institucion>.Fail("El objeto institución es nulo");
 
-            // Normalizar teléfono
+            // Validación de campos obligatorios
+            if (string.IsNullOrWhiteSpace(institucion.Name))
+                return Result<Institucion>.Fail("El nombre es requerido");
+
+            if (string.IsNullOrWhiteSpace(institucion.Email))
+                return Result<Institucion>.Fail("El correo es requerido");
+
+            if (string.IsNullOrWhiteSpace(institucion.Phone))
+                return Result<Institucion>.Fail("El teléfono es requerido");
+
+            // Normalizar TELEFONO
             institucion.Phone = institucion.Phone.Replace(" ", "")
-                                                 .Replace("-", "")
-                                                 .Replace("(", "")
-                                                 .Replace(")", "");
+                                                    .Replace("-", "")
+                                                    .Replace("(", "")
+                                                    .Replace(")", "");
 
             if (!institucion.Phone.StartsWith("503"))
                 institucion.Phone = "503" + institucion.Phone;
 
-            // Validar duplicados por nombre (opcional)
-            var existe = await _context.Institucion.AnyAsync(i => i.Name == institucion.Name);
-            if (existe)
-                return Result<Institucion>.Fail("Ya existe una institución con el mismo nombre");
+            // Validar duplicados
+            var existe = await _context.Institucion.AnyAsync(i =>
+                i.Name == institucion.Name ||
+                i.Phone == institucion.Phone ||
+                i.Email == institucion.Email);
 
+            if (existe)
+                return Result<Institucion>.Fail("Ya existe una institución con el mismo nombre, correo o teléfono");
+
+            // Validar que el IdTipoInstitucion exista antes de guardar (evita FK exception)
+            var tipoExiste = await _context.TipoInstitucion.AnyAsync(t => t.Id == institucion.IdTipoInstitucion);
+            if (!tipoExiste)
+                return Result<Institucion>.Fail("El tipo de institución no es válido");
+
+            // Guardar
             await _context.Institucion.AddAsync(institucion);
-            await _context.SaveChangesAsync();
+            var changes = await _context.SaveChangesAsync();
+
+            if (changes == 0)
+                return Result<Institucion>.Fail("No se pudo guardar la institución");
 
             return Result<Institucion>.Ok(institucion);
         }
-
 
 
         // Actualizar institución
