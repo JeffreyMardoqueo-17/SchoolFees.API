@@ -16,16 +16,16 @@ namespace SchoolFees.API.Models
         public string Address { get; set; } = string.Empty;
 
         [Phone, StringLength(20, ErrorMessage = "El teléfono no puede superar los 20 caracteres")]
-        public string Phone { get; set; }  = string.Empty;// Ejemplo: +503 0000-0000
+        public string Phone { get; set; } = string.Empty;// Ejemplo: +503 0000-0000
 
         [Required, EmailAddress, StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
-        // Relación con TipoInstitucion
+        // relacion con TipoInstitucion
         [Required]
         public int IdTipoInstitucion { get; set; }
 
         [ForeignKey(nameof(IdTipoInstitucion))]
-        public TipoInstitucion TipoInstitucion { get; set; } = new TipoInstitucion();
+        public TipoInstitucion? TipoInstitucion { get; set; } // aqui por alguna raxon tengo un prblemaal hacer create
     }
 }
