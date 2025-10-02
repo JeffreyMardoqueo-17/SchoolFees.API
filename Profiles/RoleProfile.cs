@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using SchoolFees.API.Models;
-using SchoolFees.API.DTOs.Change;
 using SchoolFees.API.DTOs.Roles;
 
 namespace SchoolFees.API.Profiles
@@ -9,9 +8,16 @@ namespace SchoolFees.API.Profiles
     {
         public RoleProfile()
         {
-            //lectura
+            // Crear (del DTO al modelo)
+            CreateMap<RoleCreateDto, Role>();
+
+            // Actualizar (del DTO al modelo)
+            CreateMap<RoleUpdateDto, Role>();
+
+            // Lectura (del modelo al DTO)
             CreateMap<Role, RoleReadDto>()
-                .ForCtorParam("Name", opt => opt.MapFrom(src => src.Name ?? string.Empty));
+                .ForMember(dest => dest.InstitucionName, 
+                           opt => opt.MapFrom(src => src.Institucion != null ? src.Institucion.Name : null));
         }
     }
 }

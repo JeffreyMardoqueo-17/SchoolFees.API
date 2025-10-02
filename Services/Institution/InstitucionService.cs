@@ -115,17 +115,30 @@ namespace SchoolFees.API.Services.Institution
 
             var existing = result.Data!;
 
+            // Actualizar campos
             existing.Name = institucion.Name;
             existing.Address = institucion.Address;
-            existing.Phone = institucion.Phone;
+
+            // Normalizar teléfono (igual que en Create)
+            existing.Phone = institucion.Phone.Replace(" ", "")
+                                              .Replace("-", "")
+                                              .Replace("(", "")
+                                              .Replace(")", "");
+            if (!existing.Phone.StartsWith("503"))
+                existing.Phone = "503" + existing.Phone;
+
             existing.Email = institucion.Email;
             existing.IdTipoInstitucion = institucion.IdTipoInstitucion;
 
             await _context.SaveChangesAsync();
 
-            return Result<Institucion>.Ok(existing);
-        }
+            // Volver a traer la institución con el TipoInstitucion actualizado
+            var updated = await _context.Institucion
+                .Include(i => i.TipoInstitucion)
+                .FirstOrDefaultAsync(i => i.Id == institucion.Id);
 
+            return Result<Institucion>.Ok(updated!);
+        }
 
         // Eliminar institución
         public async Task<Result<Institucion>> DeleteInstitucionAsync(Guid id)

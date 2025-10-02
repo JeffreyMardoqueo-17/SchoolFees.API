@@ -1,12 +1,14 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SchoolFees.API.DTOs.Roles
 {
-    public record class RoleCreateDto
-    (
-        [property: Required(ErrorMessage ="El Nombre es Requerido")]
-        [property: StringLength(50, ErrorMessage ="El maximo de caacteres es de 50")]
-        string Name
-    );
+    public class RoleCreateDto
+    {
+        [Required(ErrorMessage = "El Nombre es Requerido")]
+        [StringLength(50, ErrorMessage = "El máximo de caracteres permitidos es de 50")]
+        public string Name { get; set; } = string.Empty;
+
+        // null = rol global, valor = rol ligado a una institución
+        public Guid? IdInstitucion { get; set; }
+    }
 }

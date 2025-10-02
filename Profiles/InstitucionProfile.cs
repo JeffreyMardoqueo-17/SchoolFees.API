@@ -12,7 +12,7 @@ namespace SchoolFees.API.Profiles
             // Lectura con relación
             CreateMap<Institucion, InstitucionReadDto>()
                 .ForMember(dest => dest.TipoInstitucionName,
-                           opt => opt.MapFrom(src => src.TipoInstitucion.Name));
+                           opt => opt.MapFrom(src => src.TipoInstitucion != null ? src.TipoInstitucion.Name : null));
 
             // Relación aparte
             CreateMap<TipoInstitucion, TipoInstitucionReadDto>();
