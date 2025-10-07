@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolFees.API.Services.Roles;
 using SchoolFees.API.Models;
 using SchoolFees.API.DTOs.Roles;
+using SchoolFees.API.Helpers;
 
 namespace SchoolFees.API.Controllers
 {
@@ -23,37 +24,41 @@ namespace SchoolFees.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoleReadDto>>> GetAllRole()
         {
-            var roles = await _role.GetAllRoleAsync();
-            var result = _mapper.Map<IEnumerable<RoleReadDto>>(roles);
+            var rolesResult = await _role.GetAllRoleAsync(); // esto devuelve Result<IEnumerable<Role>>
+
+            // aqui se  mapea el contenido interno (la Data)
+            var result = _mapper.Map<IEnumerable<RoleReadDto>>(rolesResult.Data);
+
             return Ok(result);
         }
 
+
         // GET: api/role/{id}
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<RoleReadDto>> GetRoleByIdAsync(int id)
+        public async Task<ActionResult<Result<RoleReadDto>>> GetRoleByIdAsync(int id)
         {
             var role = await _role.GetRoleByIdAsync(id);
-            if (role == null)
-                return NotFound(new { message = $"No se encontró ningún rol con Id {id}" });
+            if (role == null || role.Data == null)
+                return NotFound(Result<RoleReadDto>.Fail($"No se encontró ningún rol con Id {id}"));
 
-            var result = _mapper.Map<RoleReadDto>(role);
+            var result = _mapper.Map<Result<RoleReadDto>>(role);
             return Ok(result);
         }
 
         // POST: api/role
         [HttpPost]
-        public async Task<ActionResult<RoleReadDto>> CreateRole(RoleCreateDto roleCreateDto)
+        public async Task<ActionResult<Result<RoleReadDto>>> CreateRole(RoleCreateDto roleCreateDto)
         {
             var role = _mapper.Map<Role>(roleCreateDto);
 
-            // Aquí asignarías el IdInstitucion según el usuario autenticado o null si es global
-            // role.IdInstitucion = userContext.InstitucionId;
-
             await _role.CreateRoleAsync(role);
 
-            var roleRead = _mapper.Map<RoleReadDto>(role);
-            return CreatedAtAction(nameof(GetRoleByIdAsync), new { id = roleRead.Id }, roleRead);
+            var dto = _mapper.Map<RoleReadDto>(role);
+            var result = Result<RoleReadDto>.Ok(dto);
+
+            return Created($"/api/role/{dto.Id}", result);
         }
+
 
         // PUT: api/role/{id}
         [HttpPut("{id:int}")]

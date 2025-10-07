@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SchoolFees.API.Models;
 using SchoolFees.API.DTOs.Roles;
+using SchoolFees.API.DTOs.Institucion;
 
 namespace SchoolFees.API.Profiles
 {
@@ -16,8 +17,10 @@ namespace SchoolFees.API.Profiles
 
             // Lectura (del modelo al DTO)
             CreateMap<Role, RoleReadDto>()
-                .ForMember(dest => dest.InstitucionName, 
+                .ForMember(dest => dest.InstitucionName,
                            opt => opt.MapFrom(src => src.Institucion != null ? src.Institucion.Name : null));
+            //relacion aparte de Institucion
+            CreateMap<Institucion, InstitucionReadDto>();
         }
     }
 }
