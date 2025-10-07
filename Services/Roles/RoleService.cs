@@ -47,23 +47,38 @@ namespace SchoolFees.API.Services.Roles
             if (role == null)
                 return Result<Role>.Fail("El objeto rol es nulo");
 
-            // Validacion de campos obligatorios
             if (string.IsNullOrWhiteSpace(role.Name))
                 return Result<Role>.Fail("El nombre es requerido");
 
-            // Validar si el IdInstitucion es válido si no es null
+            // Validar si la institución existe si IdInstitucion no es null
             if (role.IdInstitucion.HasValue)
             {
-                var institucionExists = await _context.Institucion.AnyAsync(i => i.Id == role.IdInstitucion.Value);
+                var institucionExists = await _context.Institucion
+                    .AnyAsync(i => i.Id == role.IdInstitucion.Value);
+
                 if (!institucionExists)
                     return Result<Role>.Fail($"No se encontró la institución con Id {role.IdInstitucion.Value}");
             }
 
+            // 🔍 Validar duplicado de nombre de rol (solo dentro de la misma institución o global)
+            bool exists = await _context.Role.AnyAsync(r =>
+                r.Name.ToLower() == role.Name.ToLower().Trim() &&
+                (
+                    (r.IdInstitucion == null && role.IdInstitucion == null) || // ambos globales
+                    (r.IdInstitucion != null && role.IdInstitucion != null && r.IdInstitucion == role.IdInstitucion) // misma institución
+                )
+            );
+
+            if (exists)
+                return Result<Role>.Fail($"Ya existe un rol con el nombre '{role.Name}' en esta institución o globalmente.");
+
+            // Crear el nuevo rol
             _context.Role.Add(role);
             await _context.SaveChangesAsync();
 
             return Result<Role>.Ok(role);
         }
+       
         public async Task<Result<Role>> UpdateRoleAsync(Role role)
         {
             if (role == null)
@@ -113,6 +128,6 @@ namespace SchoolFees.API.Services.Roles
             await _context.SaveChangesAsync();
 
             return Result<bool>.Ok(true);
-        }   
+        }
     }
 }

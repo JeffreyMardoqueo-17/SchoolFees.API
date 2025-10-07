@@ -51,11 +51,19 @@ namespace SchoolFees.API.Controllers
         {
             var role = _mapper.Map<Role>(roleCreateDto);
 
-            await _role.CreateRoleAsync(role);
+            // Intentar crear el rol
+            var creationResult = await _role.CreateRoleAsync(role);
 
-            var dto = _mapper.Map<RoleReadDto>(role);
+            // Si falla, devolver BadRequest con mensaje
+            if (!creationResult.Success)
+                return BadRequest(Result<RoleReadDto>.Fail(creationResult.Message ?? "Error al crear el rol"));
+
+            // Mapear el DTO
+            var dto = _mapper.Map<RoleReadDto>(creationResult.Data);
+
             var result = Result<RoleReadDto>.Ok(dto);
 
+            // Retornar Created con URL
             return Created($"/api/role/{dto.Id}", result);
         }
 
