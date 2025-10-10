@@ -14,7 +14,11 @@ namespace SchoolFees.API.Services.Roles
         Task<Result<Role>> UpdateRoleAsync(Role role);
         Task<Result<bool>> DeleteRoleAsync(Role role);
 
-        //metodo para paginacion
-        Task<PagedResult<Role>> GetRolesPagedAsync(int pageNumber, int pageSize); //============> AQUI ESTO ES NUEBO NI SE SI FUNCIONE LA VEERDAD
+        // Servicio de roles (frontend/backend)
+        Task<PagedResult<Role>> GetRolesPagedAsync(
+            int pageNumber,
+            int pageSize,
+            string? orderBy = "Id",
+            string? orderDirection = "asc"); ///============> AQUI ESTO ES NUEBO NI SE SI FUNCIONE LA VEERDAD
     }
 }

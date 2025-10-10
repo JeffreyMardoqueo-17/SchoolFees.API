@@ -8,7 +8,11 @@ namespace SchoolFees.API.Helpers
         public int CurrentPage { get; set; }
         public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
 
+        //aqui implementare para ordenar por asencente o descendente
         public bool HasPreviousPage => CurrentPage > 1;
         public bool HasNextPage => CurrentPage < TotalPages;
+         // 🧭 Campo y dirección del orden (solo informativo)
+        public string? OrderBy { get; set; }
+        public string? OrderDirection { get; set; } // "asc" o "desc"
     }
 }

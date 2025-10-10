@@ -130,31 +130,63 @@ namespace SchoolFees.API.Services.Roles
             return Result<bool>.Ok(true);
         }
         //metodo para paginacion
-        public async Task<PagedResult<Role>> GetRolesPagedAsync(int pageNumber, int pageSize)
+
+        // Implementación requerida por la interfaz: delega al método completo con valores por defecto.
+        public Task<PagedResult<Role>> GetRolesPagedAsync(int pageNumber, int pageSize)
+        {
+            return GetRolesPagedAsync(pageNumber, pageSize, "Id", "asc");
+        }
+
+        public async Task<PagedResult<Role>> GetRolesPagedAsync(
+            int pageNumber,
+            int pageSize,
+            string? orderBy = "Id",
+            string? orderDirection = "asc")
         {
             if (pageNumber <= 0 || pageSize <= 0)
                 throw new ArgumentException("Los parámetros de paginación son inválidos.");
 
+            // 🔹 Base query con relaciones incluidas
             var query = _context.Role
                 .AsNoTracking()
                 .Include(r => r.Institucion)
-                .OrderBy(r => r.Id); // Orden estable para paginación
+                .AsQueryable();
 
+            // 🔹 Aplicar orden dinámico según campo y dirección
+            query = orderBy?.ToLower() switch
+            {
+                "name" => orderDirection?.ToLower() == "desc"
+                    ? query.OrderByDescending(r => r.Name)
+                    : query.OrderBy(r => r.Name),
+
+                "institucion" or "institucionname" => orderDirection?.ToLower() == "desc"
+                    ? query.OrderByDescending(r => r.Institucion.Name)
+                    : query.OrderBy(r => r.Institucion.Name),
+
+                _ => orderDirection?.ToLower() == "desc"
+                    ? query.OrderByDescending(r => r.Id)
+                    : query.OrderBy(r => r.Id)
+            };
+
+            // 🔹 Total de registros antes de paginar
             var totalCount = await query.CountAsync();
+
+            // 🔹 Aplicar paginación
             var roles = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            var pagedResult = new PagedResult<Role>
+            // 🔹 Retornar resultado paginado completo
+            return new PagedResult<Role>
             {
                 Items = roles,
                 TotalCount = totalCount,
                 PageSize = pageSize,
-                CurrentPage = pageNumber
+                CurrentPage = pageNumber,
+                OrderBy = orderBy,
+                OrderDirection = orderDirection
             };
-
-            return pagedResult;
         }
 
     }

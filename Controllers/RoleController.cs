@@ -103,14 +103,18 @@ namespace SchoolFees.API.Controllers
 
             return NoContent();
         }
-        // GET: api/role/paged?pageNumber=1&pageSize=10
+        // GET: api/role/paged?pageNumber=1&pageSize=10&orderBy=name&orderDirection=asc
         [HttpGet("paged")]
-        public async Task<ActionResult<Result<PagedResult<RoleReadDto>>>> GetRolesPagedAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<Result<PagedResult<RoleReadDto>>>> GetRolesPagedAsync(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? orderBy = "Id",
+            [FromQuery] string? orderDirection = "asc")
         {
             try
             {
-                // 🔹 Llamamos al servicio
-                var pagedResult = await _role.GetRolesPagedAsync(pageNumber, pageSize);
+                // 🔹 Llamamos al servicio con orden dinámico
+                var pagedResult = await _role.GetRolesPagedAsync(pageNumber, pageSize, orderBy, orderDirection);
 
                 if (!pagedResult.Items.Any())
                     return NotFound(Result<PagedResult<RoleReadDto>>.Fail("No se encontraron roles para la página solicitada."));
@@ -118,22 +122,24 @@ namespace SchoolFees.API.Controllers
                 // 🔹 Mapeamos las entidades a DTOs
                 var mappedRoles = _mapper.Map<IEnumerable<RoleReadDto>>(pagedResult.Items);
 
-                // 🔹 Reconstruimos el resultado con los DTOs mapeados
+                // 🔹 Reconstruimos el PagedResult con los DTOs y parámetros de orden
                 var result = new PagedResult<RoleReadDto>
                 {
                     Items = mappedRoles,
                     TotalCount = pagedResult.TotalCount,
                     PageSize = pagedResult.PageSize,
-                    CurrentPage = pagedResult.CurrentPage
+                    CurrentPage = pagedResult.CurrentPage,
+                    OrderBy = pagedResult.OrderBy,
+                    OrderDirection = pagedResult.OrderDirection
                 };
 
-                // 🔹 Envolvemos en el Result genérico
+                // 🔹 Retornamos en Result genérico
                 return Ok(Result<PagedResult<RoleReadDto>>.Ok(result));
             }
             catch (Exception ex)
             {
-                // 🔹 Manejo estructurado de errores
-                return StatusCode(500, Result<PagedResult<RoleReadDto>>.Fail($"Error interno al obtener los roles paginados: {ex.Message}"));
+                // 🔹 Manejo de errores profesional
+                return StatusCode(500, Result<PagedResult<RoleReadDto>>.Fail($"Error interno al obtener roles paginados: {ex.Message}"));
             }
         }
 
