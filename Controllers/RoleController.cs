@@ -103,5 +103,39 @@ namespace SchoolFees.API.Controllers
 
             return NoContent();
         }
+        // GET: api/role/paged?pageNumber=1&pageSize=10
+        [HttpGet("paged")]
+        public async Task<ActionResult<Result<PagedResult<RoleReadDto>>>> GetRolesPagedAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                // 🔹 Llamamos al servicio
+                var pagedResult = await _role.GetRolesPagedAsync(pageNumber, pageSize);
+
+                if (!pagedResult.Items.Any())
+                    return NotFound(Result<PagedResult<RoleReadDto>>.Fail("No se encontraron roles para la página solicitada."));
+
+                // 🔹 Mapeamos las entidades a DTOs
+                var mappedRoles = _mapper.Map<IEnumerable<RoleReadDto>>(pagedResult.Items);
+
+                // 🔹 Reconstruimos el resultado con los DTOs mapeados
+                var result = new PagedResult<RoleReadDto>
+                {
+                    Items = mappedRoles,
+                    TotalCount = pagedResult.TotalCount,
+                    PageSize = pagedResult.PageSize,
+                    CurrentPage = pagedResult.CurrentPage
+                };
+
+                // 🔹 Envolvemos en el Result genérico
+                return Ok(Result<PagedResult<RoleReadDto>>.Ok(result));
+            }
+            catch (Exception ex)
+            {
+                // 🔹 Manejo estructurado de errores
+                return StatusCode(500, Result<PagedResult<RoleReadDto>>.Fail($"Error interno al obtener los roles paginados: {ex.Message}"));
+            }
+        }
+
     }
 }

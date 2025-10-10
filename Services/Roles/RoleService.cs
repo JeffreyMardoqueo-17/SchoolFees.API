@@ -78,7 +78,7 @@ namespace SchoolFees.API.Services.Roles
 
             return Result<Role>.Ok(role);
         }
-       
+
         public async Task<Result<Role>> UpdateRoleAsync(Role role)
         {
             if (role == null)
@@ -129,5 +129,33 @@ namespace SchoolFees.API.Services.Roles
 
             return Result<bool>.Ok(true);
         }
+        //metodo para paginacion
+        public async Task<PagedResult<Role>> GetRolesPagedAsync(int pageNumber, int pageSize)
+        {
+            if (pageNumber <= 0 || pageSize <= 0)
+                throw new ArgumentException("Los parámetros de paginación son inválidos.");
+
+            var query = _context.Role
+                .AsNoTracking()
+                .Include(r => r.Institucion)
+                .OrderBy(r => r.Id); // Orden estable para paginación
+
+            var totalCount = await query.CountAsync();
+            var roles = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var pagedResult = new PagedResult<Role>
+            {
+                Items = roles,
+                TotalCount = totalCount,
+                PageSize = pageSize,
+                CurrentPage = pageNumber
+            };
+
+            return pagedResult;
+        }
+
     }
 }

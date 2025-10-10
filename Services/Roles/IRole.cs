@@ -1,5 +1,5 @@
 ﻿using SchoolFees.API.Models;
-using SchoolFees.API.Helpers; // Para Result<T>
+using SchoolFees.API.Helpers; // Para Result<T> y PagedResult<T>
 
 namespace SchoolFees.API.Services.Roles
 {
@@ -13,5 +13,8 @@ namespace SchoolFees.API.Services.Roles
         Task<Result<Role>> CreateRoleAsync(Role role);
         Task<Result<Role>> UpdateRoleAsync(Role role);
         Task<Result<bool>> DeleteRoleAsync(Role role);
+
+        //metodo para paginacion
+        Task<PagedResult<Role>> GetRolesPagedAsync(int pageNumber, int pageSize); //============> AQUI ESTO ES NUEBO NI SE SI FUNCIONE LA VEERDAD
     }
 }
