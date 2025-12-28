@@ -53,7 +53,7 @@ namespace SchoolFees.DAL.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var alumno = await _context.Alumnos.FindAsync(id);
+            var alumno = await GetByIdAsync(id);
             if (alumno == null) return;
 
             alumno.Estado = false; // Soft delete

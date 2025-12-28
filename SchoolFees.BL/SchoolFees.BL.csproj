@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SchoolFees.EN\SchoolFees.EN.csproj" />
+    <ProjectReference Include="..\SchoolFees.DAL\SchoolFees.DAL.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
