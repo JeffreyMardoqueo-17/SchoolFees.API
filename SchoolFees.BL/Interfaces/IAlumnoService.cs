@@ -9,6 +9,6 @@ namespace SchoolFees.BL.Interfaces
     public interface IAlumnoService : ICrudService<Alumno>
     {
         Task<IEnumerable<Alumno?>> GetInactivosAsync();
-               Task<Alumno> PostAsync(Alumno entity, int idGrado);
+               Task<Alumno> PostAsync(Alumno entity, int idGrupo, int adminId);
     }
 }

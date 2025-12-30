@@ -26,3 +26,6 @@ Insert into Grado(Nombre, Nivel, Estado) Values ('Bachillerato General', 'Educac
 
 INSERT INTO Turno (Nombre, Estado) Values('Matutino', 1),
 									     ('Vespertino', 1);
+
+										 SELECT * FROM Turno
+

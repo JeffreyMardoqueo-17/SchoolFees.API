@@ -15,6 +15,7 @@ var app = builder.Build();
 builder.Services.AddDbContext< SchoolFeesDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 // Configure the HTTP request pipeline.

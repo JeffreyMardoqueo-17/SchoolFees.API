@@ -15,6 +15,7 @@
         FechaModificacion DATETIME NULL
     );
     GO
+    SELECT * FROM Alumno
 
 
     CREATE TABLE Encargado (
