@@ -1,3 +1,5 @@
+
+using SchoolFees.EN.Exceptions;
 using SchoolFees.EN.models;
 
 namespace SchoolFees.BL.Rules
@@ -6,8 +8,26 @@ namespace SchoolFees.BL.Rules
     {
         public static void PuedeSerCreado(Alumno alumno)
         {
-            if (alumno.GradoId <= 0)
-                throw new BusinessException("El alumno debe pertenecer a un grado.");
+            if (alumno == null)
+                throw new BusinessException("Alumno requerido.");
+
+            if (string.IsNullOrWhiteSpace(alumno.Nombres))
+                throw new BusinessException("Los nombres son obligatorios.");
+
+            if (string.IsNullOrWhiteSpace(alumno.Apellidos))
+                throw new BusinessException("Los apellidos son obligatorios.");
+
+            if (alumno.FechaNacimiento == null)
+                throw new BusinessException("La fecha de nacimiento es obligatoria.");
+        }
+
+        public static void PuedeSerAsignadoAGrupo(int alumnoId, int grupoId)
+        {
+            if (alumnoId <= 0)
+                throw new BusinessException("Alumno inválido.");
+
+            if (grupoId <= 0)
+                throw new BusinessException("Grupo inválido.");
         }
 
         public static void PuedeSerActualizado(Alumno alumno)

@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using SchoolFees.DAL.Context;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// DbContext
+builder.Services.AddDbContext< SchoolFeesDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

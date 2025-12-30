@@ -6,10 +6,9 @@ using SchoolFees.EN.models;
 
 namespace SchoolFees.DAL.Interfaces
 {
-    public interface IGradoRepository
+    public interface IGrupoRepository
     {
-        Task <IEnumerable<Grado>> GetAllGrado();
-        Task<Grado?> GetByIdGradoAsync(int id); //y para saber si existe
-        
+        Task<IEnumerable<Grupo>> GetAllGrupo();
+        Task<Grupo?> GetByIdGrupoAsync(int id);
     }
 }

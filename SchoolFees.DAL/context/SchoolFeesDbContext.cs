@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolFees.EN.models;
+using SchoolFees.EN.Models;
 
 namespace SchoolFees.DAL.Context
 {
@@ -10,14 +11,34 @@ namespace SchoolFees.DAL.Context
         {
         }
 
-        public DbSet<Alumno> Alumnos { get; set; } = null!;
+        public DbSet<Alumno> Alumno { get; set; } = null!;
+        public DbSet<Grado> Grado { get; set; } = null!;
+        public DbSet<Grupo> Grupo { get; set; } = null!;
+        public DbSet<AlumnoGrupo> AlumnoGrupo { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<AlumnoGrupo>()
+                .HasKey(ag => new { ag.IdAlumno, ag.IdGrupo });
+            modelBuilder.Entity<AlumnoGrupo>(entity =>
+            {
+                entity.HasKey(e => new { e.IdAlumno, e.IdGrupo });
 
-            // Configuraciones por Fluent API (si no usas Data Annotations)
-            // modelBuilder.ApplyConfigurationsFromAssembly(typeof(SchoolFeesDbContext).Assembly);
+                entity.Property(e => e.FechaAsignacion)
+                    .HasDefaultValueSql("GETDATE()");
+
+                entity.HasOne<Alumno>()
+                    .WithMany()
+                    .HasForeignKey(e => e.IdAlumno)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne<Grupo>()
+                    .WithMany()
+                    .HasForeignKey(e => e.IdGrupo)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
         }
     }
 }

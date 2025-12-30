@@ -6,12 +6,12 @@ using SchoolFees.EN.models;
 
 namespace SchoolFees.BL.Interfaces
 {
-    public interface ICrudService
+    public interface ICrudService<T> where T : class
     {
-        Task<Alumno> CrearAsync(Alumno alumno);
-        Task<IEnumerable<Alumno>> ObtenerActivosAsync();
-        Task<Alumno?> ObtenerPorIdAsync(int id);
-        Task ActualizarAsync(Alumno alumno);
-        Task EliminarAsync(int id);
+        // Task<T> PostAsync(T entity);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(int id);
+        Task UpdateAsync(T entity);
+        Task DeleteAsync(int id);
     }
 }

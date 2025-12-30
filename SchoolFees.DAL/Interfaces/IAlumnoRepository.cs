@@ -10,6 +10,12 @@ namespace SchoolFees.DAL.Interfaces
     {
         // Task<Alumno> GetByCodigoAlumnoAsync(string codigoAlumno);
         Task<IEnumerable<Alumno?>> GetInactivosAsync();
+        Task<bool> ExistePosibleDuplicadoAsync(
+    string nombres,
+    string apellidos,
+    DateTime fechaNacimiento);
+
+        // Task<Alumno> CreateAlumnoAsync(Alumno entity, int idGrado);
 
     }
 }
