@@ -97,3 +97,39 @@
         FOREIGN KEY (IdMaestro) REFERENCES Maestro(Id)
     );
     GO
+
+    CREATE TABLE Rol (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(50) NOT NULL UNIQUE,
+    Estado BIT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE Administrador (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+
+    -- Identidad
+    Nombres VARCHAR(50) NOT NULL,
+    Apellidos VARCHAR(50) NOT NULL,
+    Correo VARCHAR(150) NOT NULL UNIQUE,
+
+    -- Autenticación
+    PasswordHash VARCHAR(256) NOT NULL,
+    PasswordSalt VARCHAR(256) NOT NULL,
+    UltimoLogin DATETIME NULL,
+    IntentosFallidos INT NOT NULL DEFAULT 0,
+    BloqueadoHasta DATETIME NULL,
+
+    -- Autorización
+    IdRol INT NOT NULL,
+    EsSuperAdmin BIT NOT NULL DEFAULT 0,
+
+    -- Auditoría
+    Estado BIT NOT NULL DEFAULT 1,
+    FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
+    CreadoPor INT NOT NULL,
+    FechaModificacion DATETIME NULL,
+    ModificadoPor INT NULL,
+    UltimaIP VARCHAR(45) NULL,
+
+    CONSTRAINT FK_Administrador_Rol FOREIGN KEY (IdRol) REFERENCES Rol(Id)
+);
