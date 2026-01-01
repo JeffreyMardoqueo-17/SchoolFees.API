@@ -16,6 +16,14 @@ namespace SchoolFees.DAL.Context
         public DbSet<Grupo> Grupo { get; set; } = null!;
         public DbSet<AlumnoGrupo> AlumnoGrupo { get; set; } = null!;
 
+
+        /// <summary>
+        /// administracion
+        /// </summary>
+        public DbSet<Rol> Rol { get; set; } = null!;
+        
+
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

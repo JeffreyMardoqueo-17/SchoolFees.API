@@ -26,15 +26,15 @@ namespace SchoolFees.DAL.Repositories
         {
             return await _context.Alumno
                 .AsNoTracking()
-                .Where(a => a.Estado )
+                .Where(a => a.Estado == true)
                 .ToListAsync();
         }
 
-        public async Task<Alumno?> GetByIdAsync(int id)
+        public async Task<Alumno> GetByIdAsync(int id)
         {
             return await _context.Alumno
                 .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == id && a.Estado);
+                .FirstOrDefaultAsync(a => a.Id == id && a.Estado == true);
         }
 
         public async Task<IEnumerable<Alumno?>> GetInactivosAsync()

@@ -99,10 +99,11 @@
     GO
 
     CREATE TABLE Rol (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre VARCHAR(50) NOT NULL UNIQUE,
-    Estado BIT NOT NULL DEFAULT 1
-);
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Nombre VARCHAR(50) NOT NULL UNIQUE,
+        Estado BIT NOT NULL DEFAULT 1
+    );
+GO
 
 CREATE TABLE Administrador (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -126,7 +127,7 @@ CREATE TABLE Administrador (
     -- Auditoría
     Estado BIT NOT NULL DEFAULT 1,
     FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
-    CreadoPor INT NOT NULL,
+    CreadoPor INT NULL,
     FechaModificacion DATETIME NULL,
     ModificadoPor INT NULL,
     UltimaIP VARCHAR(45) NULL,
