@@ -20,7 +20,11 @@ namespace SchoolFees.UI.Controllers
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _rolService.GetAllRolesAsync();
-            return Ok(roles);
+
+            if (!roles.Any())
+                return NoContent(); // 204
+
+            return Ok(roles); // 200
         }
 
         // GET: api/rol/5

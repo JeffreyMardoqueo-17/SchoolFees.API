@@ -17,12 +17,9 @@ namespace SchoolFees.BL.Services
 
         public async Task<IEnumerable<Rol>> GetAllRolesAsync()
         {
-            var roles = await _rolRepository.GetAllRolesAsync();
-            if(roles == null || !roles.Any())
-                throw new BusinessException("No hay roles disponibles.");
-            return roles;
-            // return await _rolRepository.GetAllRolesAsync();
+            return await _rolRepository.GetAllRolesAsync();
         }
+
 
         public async Task<Rol> GetRoleByIdAsync(int id)
         {
