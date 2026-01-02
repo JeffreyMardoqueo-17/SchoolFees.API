@@ -16,6 +16,9 @@ namespace SchoolFees.DAL.Context
         public DbSet<Grupo> Grupo { get; set; } = null!;
         public DbSet<AlumnoGrupo> AlumnoGrupo { get; set; } = null!;
 
+        //adminsitracion
+        public DbSet<Administrador> Administrador { get; set; } = null!;
+
 
         /// <summary>
         /// administracion
