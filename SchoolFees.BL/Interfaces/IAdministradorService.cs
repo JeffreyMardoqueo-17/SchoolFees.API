@@ -15,6 +15,10 @@ namespace SchoolFees.BL.Interfaces
             IEnumerable<int> rolesIds,
             int creadoPor);
 
+        // ---------------- Autenticación ----------------
+
+        Task<Administrador> LoginAsync(string correo, string password, string ip);
+        // Task CambiarPasswordAsync(int id, string passwordActual, string nuevoPassword);
         // Task ActualizarAsync(
         //     Administrador administrador,
         //     int modificadoPor);
@@ -26,11 +30,6 @@ namespace SchoolFees.BL.Interfaces
 
         // Task AsignarRolAsync(int administradorId, int rolId, int asignadoPor);
         // Task QuitarRolAsync(int administradorId, int rolId, int modificadoPor);
-
-        // // ---------------- Autenticación ----------------
-
-        // Task<Administrador> LoginAsync(string correo, string password, string ip);
-        // Task CambiarPasswordAsync(int id, string passwordActual, string nuevoPassword);
 
         // // ---------------- Seguridad ----------------
 

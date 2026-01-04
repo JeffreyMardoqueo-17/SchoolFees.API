@@ -35,7 +35,7 @@ namespace SchoolFees.DAL.Context
             modelBuilder.Entity<AlumnoGrupo>()
                 .HasKey(ag => new { ag.IdAlumno, ag.IdGrupo });
 
-            // 🔥 AdministradorRol (ESTO ARREGLA TODO)
+            //  AdministradorRol (ESTO ARREGLA TODO)
             modelBuilder.Entity<AdministradorRol>()
                 .HasKey(ar => new { ar.IdAdministrador, ar.IdRol });
 

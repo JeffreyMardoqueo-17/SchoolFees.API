@@ -30,7 +30,7 @@ namespace SchoolFees.BL.Services
             }
             return administrador;
         }
-        public async Task CreateAsync( Administrador administrador,IEnumerable<int> rolesIds,int creadoPor)
+        public async Task CreateAsync(Administrador administrador, IEnumerable<int> rolesIds, int creadoPor)
         {
             // 1 Validaciones básicas
             if (administrador == null)
@@ -65,11 +65,70 @@ namespace SchoolFees.BL.Services
 
             // ⚠️ NOTA IMPORTANTE:
             // Aquí NO se asignan roles porque
-            // tu repository aún NO lo soporta
+            // el repository aún NO lo soporta
 
             // 5️⃣ Persistencia
             await _administradorRepository.CreateAsync(administrador);
         }
+
+        public async Task<Administrador> LoginAsync(string correo, string password, string ip)
+        {
+            if (string.IsNullOrWhiteSpace(correo) || string.IsNullOrWhiteSpace(password))
+                throw new BusinessException("Credenciales inválidas.");
+
+            var admin = await _administradorRepository
+                .GetByCorreoAsync(correo);
+
+            // ❗ NUNCA se dice si el correo existe
+            if (admin == null)
+                throw new BusinessException("Credenciales inválidas.");
+
+            if (!admin.Estado)
+                throw new BusinessException("Usuario deshabilitado.");
+
+            // ⛔ Bloqueo por intentos
+            if (admin.BloqueadoHasta.HasValue &&
+                admin.BloqueadoHasta > DateTime.UtcNow)
+            {
+                throw new BusinessException(
+                    $"Cuenta bloqueada hasta {admin.BloqueadoHasta:HH:mm}."
+                );
+            }
+
+            // 🔐 Verificación de contraseña
+            bool passwordOk = PasswordHasher.VerifyPassword(
+                password,
+                admin.PasswordHash,
+                admin.PasswordSalt
+            );
+
+            if (!passwordOk)
+            {
+                admin.IntentosFallidos++;
+
+                // 🔥 Política: 5 intentos → bloqueo 15 min
+                if (admin.IntentosFallidos >= 5)
+                {
+                    admin.BloqueadoHasta = DateTime.UtcNow.AddMinutes(15);
+                    admin.IntentosFallidos = 0;
+                }
+
+                await _administradorRepository.UpdateAsync(admin);
+
+                throw new BusinessException("Credenciales inválidas.");
+            }
+
+            // ✅ LOGIN CORRECTO
+            admin.IntentosFallidos = 0;
+            admin.BloqueadoHasta = null;
+            admin.UltimoLogin = DateTime.UtcNow;
+            admin.UltimaIP = ip;
+
+            await _administradorRepository.UpdateAsync(admin);
+
+            return admin;
+        }
+
 
     }
 }

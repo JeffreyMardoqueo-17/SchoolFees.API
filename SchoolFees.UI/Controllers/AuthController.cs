@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SchoolFees.BL.Interfaces;
+using SchoolFees.BL.Security;
 using SchoolFees.EN.models;
 using SchoolFees.UI.DTOs.Admin;
 
@@ -7,13 +8,15 @@ namespace SchoolFees.UI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AdministradorController : ControllerBase
+    public class AuthControllerController : ControllerBase
     {
         private readonly IAdministradorService _administradorService;
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public AdministradorController(IAdministradorService administradorService)
+        public AuthControllerController(IAdministradorService administradorService, JwtTokenGenerator jwtTokenGenerator)
         {
             _administradorService = administradorService;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         // ============================
@@ -93,5 +96,31 @@ namespace SchoolFees.UI.Controllers
                 null
             );
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
+        {
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            var admin = await _administradorService
+                .LoginAsync(dto.Correo, dto.Password, ip!);
+
+            // 🔐 Generar JWT (INFRAESTRUCTURA, NO BL)
+            var token = _jwtTokenGenerator.GenerateToken(admin);
+
+            var response = new LoginResponseDto
+            {
+                Id = admin.Id,
+                Nombres = admin.Nombres,
+                Apellidos = admin.Apellidos,
+                Correo = admin.Correo,
+                UltimoLogin = admin.UltimoLogin!.Value,
+                Roles = admin.Roles.Select(r => r.Rol.Nombre),
+                Token = token
+            };
+
+            return Ok(response);
+        }
+
     }
 }
