@@ -33,3 +33,16 @@ namespace SchoolFees.EN.models
             = new List<AdministradorRol>();
     }
 }
+
+
+
+// {
+//   "administrador": {
+//     "nombres": "Jeffrey Mardoqueo",
+//     "apellidos": "Jimenez Santos",
+//     "correo": "jeffreymardoqueo260@gmail.com",
+//     "passwordHash": "***"
+//   },
+//   "rolesIds": [1],
+//   "creadoPor": null
+// }

@@ -30,7 +30,7 @@ namespace SchoolFees.BL.Services
             }
             return administrador;
         }
-        public async Task CrearAsync( Administrador administrador,IEnumerable<int> rolesIds,int creadoPor)
+        public async Task CreateAsync( Administrador administrador,IEnumerable<int> rolesIds,int creadoPor)
         {
             // 1 Validaciones básicas
             if (administrador == null)

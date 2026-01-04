@@ -7,35 +7,35 @@ namespace SchoolFees.BL.Interfaces
     {
         // ---------------- Gestión ----------------
 
-        Task<IEnumerable<Administrador>> ObtenerTodosAsync();
-        Task<Administrador?> ObtenerPorIdAsync(int id);
+        Task<IEnumerable<Administrador>> GetAllAsync();
+        Task<Administrador> GetByIdAsync(int id);
 
-        Task CrearAsync(
+        Task CreateAsync(
             Administrador administrador,
             IEnumerable<int> rolesIds,
             int creadoPor);
 
-        Task ActualizarAsync(
-            Administrador administrador,
-            int modificadoPor);
+        // Task ActualizarAsync(
+        //     Administrador administrador,
+        //     int modificadoPor);
 
-        Task ActivarAsync(int id, int modificadoPor);
-        Task DesactivarAsync(int id, int modificadoPor);
+        // Task ActivarAsync(int id, int modificadoPor);
+        // Task DesactivarAsync(int id, int modificadoPor);
 
-        // ---------------- Roles ----------------
+        // // ---------------- Roles ----------------
 
-        Task AsignarRolAsync(int administradorId, int rolId, int asignadoPor);
-        Task QuitarRolAsync(int administradorId, int rolId, int modificadoPor);
+        // Task AsignarRolAsync(int administradorId, int rolId, int asignadoPor);
+        // Task QuitarRolAsync(int administradorId, int rolId, int modificadoPor);
 
-        // ---------------- Autenticación ----------------
+        // // ---------------- Autenticación ----------------
 
-        Task<Administrador> LoginAsync(string correo, string password, string ip);
-        Task CambiarPasswordAsync(int id, string passwordActual, string nuevoPassword);
+        // Task<Administrador> LoginAsync(string correo, string password, string ip);
+        // Task CambiarPasswordAsync(int id, string passwordActual, string nuevoPassword);
 
-        // ---------------- Seguridad ----------------
+        // // ---------------- Seguridad ----------------
 
-        Task BloquearAsync(int id, int minutos);
-        Task ResetearIntentosFallidosAsync(int id);
+        // Task BloquearAsync(int id, int minutos);
+        // Task ResetearIntentosFallidosAsync(int id);
     }
 
 }
