@@ -1,4 +1,5 @@
 using SchoolFees.EN.Exceptions;
+using SchoolFees.EN.models;
 
 namespace SchoolFees.EN.Models
 {
@@ -8,10 +9,14 @@ namespace SchoolFees.EN.Models
         public int IdGrupo { get; private set; }
         public DateTime FechaAsignacion { get; private set; }
 
-        // Constructor para EF
+        // 🔥 PROPIEDADES DE NAVEGACIÓN (CLAVE)
+        public Alumno Alumno { get; private set; } = null!;
+        public Grupo Grupo { get; private set; } = null!;
+
+
+
         protected AlumnoGrupo() { }
 
-        // Constructor de dominio
         public AlumnoGrupo(int idAlumno, int idGrupo)
         {
             if (idAlumno <= 0)

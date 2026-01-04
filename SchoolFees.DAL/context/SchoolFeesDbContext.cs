@@ -31,24 +31,78 @@ namespace SchoolFees.DAL.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            // AlumnoGrupo (ya lo tenías bien)
+            // =========================
+            // ALUMNO - GRUPO (N:N)
+            // =========================
             modelBuilder.Entity<AlumnoGrupo>()
-                .HasKey(ag => new { ag.IdAlumno, ag.IdGrupo });
+      .HasKey(ag => new { ag.IdAlumno, ag.IdGrupo });
 
-            //  AdministradorRol (ESTO ARREGLA TODO)
+            modelBuilder.Entity<AlumnoGrupo>()
+                .HasOne(ag => ag.Alumno)
+                .WithMany(a => a.Grupos)
+                .HasForeignKey(ag => ag.IdAlumno)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AlumnoGrupo>()
+                .HasOne(ag => ag.Grupo)
+                .WithMany(g => g.Grupos)
+                .HasForeignKey(ag => ag.IdGrupo)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            // =========================
+            // ADMINISTRADOR - ROL (N:N)
+            // =========================
             modelBuilder.Entity<AdministradorRol>()
                 .HasKey(ar => new { ar.IdAdministrador, ar.IdRol });
 
             modelBuilder.Entity<AdministradorRol>()
                 .HasOne(ar => ar.Administrador)
                 .WithMany(a => a.Roles)
-                .HasForeignKey(ar => ar.IdAdministrador);
+                .HasForeignKey(ar => ar.IdAdministrador)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdministradorRol>()
                 .HasOne(ar => ar.Rol)
-                .WithMany()
-                .HasForeignKey(ar => ar.IdRol);
+                .WithMany(r => r.Administradores)
+                .HasForeignKey(ar => ar.IdRol)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // =========================
+            // ADMINISTRADOR
+            // =========================
+            modelBuilder.Entity<Administrador>(entity =>
+            {
+                entity.HasIndex(a => a.Correo)
+                      .IsUnique();
+
+                entity.Property(a => a.Correo)
+                      .IsRequired()
+                      .HasMaxLength(150);
+
+                entity.Property(a => a.Nombres)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.Property(a => a.Apellidos)
+                      .IsRequired()
+                      .HasMaxLength(100);
+            });
+
+            // =========================
+            // ROL
+            // =========================
+            modelBuilder.Entity<Rol>(entity =>
+            {
+                entity.Property(r => r.Nombre)
+                      .IsRequired()
+                      .HasMaxLength(50);
+
+                entity.HasIndex(r => r.Nombre)
+                      .IsUnique();
+            });
         }
+
 
     }
 }

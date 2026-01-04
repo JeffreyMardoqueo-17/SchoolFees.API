@@ -16,7 +16,7 @@ namespace SchoolFees.BL.Services
         private readonly IAlumnoGrupoRepository _alumnoGrupoRepository;
         private readonly IGrupoRepository _grupoRepository;
         private readonly IUnitOfWork _unitOfWork;
-    
+
         // private readonly IAlumnoGrupoRepository _alumnoGrupoRepository;
 
         public AlumnoService(
@@ -27,63 +27,63 @@ namespace SchoolFees.BL.Services
             _validator = new AlumnoBusinessValidator(gradoRepository, alumnoRepository);
             _unitOfWork = unitOfWork;
         }
-public async Task<Alumno> PostAsync(Alumno alumno, int grupoId, int adminId)
-{
-    if (alumno == null)
-        throw new BusinessException("Alumno requerido.");
+        public async Task<Alumno> PostAsync(Alumno alumno, int grupoId, int adminId)
+        {
+            if (alumno == null)
+                throw new BusinessException("Alumno requerido.");
 
-    // 1️⃣ Estado inicial
-    alumno.Estado = false;
-    alumno.CreadoPor = adminId;
-    alumno.FechaCreacion = DateTime.UtcNow;
+            // 1️⃣ Estado inicial
+            alumno.Estado = false;
+            alumno.CreadoPor = adminId;
+            alumno.FechaCreacion = DateTime.UtcNow;
 
-    // 2️⃣ Reglas de dominio
-    AlumnoRules.PuedeSerCreado(alumno);
+            // 2️⃣ Reglas de dominio
+            AlumnoRules.PuedeSerCreado(alumno);
 
-    // 3️⃣ Validaciones en BD
-    await _validator.ValidarCreacionAsync(alumno);
+            // 3️⃣ Validaciones en BD
+            await _validator.ValidarCreacionAsync(alumno);
 
-    // 🔒 AQUÍ DEBE IR UNA TRANSACCIÓN
-    using var transaction = await _unitOfWork.BeginTransactionAsync();
+            // 🔒 AQUÍ DEBE IR UNA TRANSACCIÓN
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-    try
-    {
-        // 4️⃣ Crear alumno
-        var alumnoCreado = await _alumnoRepository.CreateAsync(alumno);
+            try
+            {
+                // 4️⃣ Crear alumno
+                var alumnoCreado = await _alumnoRepository.CreateAsync(alumno);
 
-        // 5️⃣ Generar código
-        alumnoCreado.CodigoAlumno =
-            AlumnoCodeGenerator.Generar(alumnoCreado, alumnoCreado.Id);
+                // 5️⃣ Generar código
+                alumnoCreado.CodigoAlumno =
+                    AlumnoCodeGenerator.Generar(alumnoCreado, alumnoCreado.Id);
 
-        // 6️⃣ Activar alumno
-        alumnoCreado.Estado = true;
-        alumnoCreado.ModificadoPor = adminId;
-        alumnoCreado.FechaModificacion = DateTime.UtcNow;
+                // 6️⃣ Activar alumno
+                alumnoCreado.Estado = true;
+                alumnoCreado.ModificadoPor = adminId;
+                alumnoCreado.FechaModificacion = DateTime.UtcNow;
 
-        // 7️⃣ Guardar cambios
-        await _alumnoRepository.UpdateAsync(alumnoCreado);
+                // 7️⃣ Guardar cambios
+                await _alumnoRepository.UpdateAsync(alumnoCreado);
 
-        // 8️⃣ Validar grupo
-        var grupo = await _grupoRepository.GetByIdGrupoAsync(grupoId);
-        if (grupo == null || !grupo.Estado)
-            throw new BusinessException("Grupo inválido o inactivo.");
+                // 8️⃣ Validar grupo
+                var grupo = await _grupoRepository.GetByIdGrupoAsync(grupoId);
+                if (grupo == null || !grupo.Estado)
+                    throw new BusinessException("Grupo inválido o inactivo.");
 
-        // 9️⃣ Asignación (DOMINIO)
-        var asignacion = new AlumnoGrupo(alumnoCreado.Id, grupo.Id);
+                // 9️⃣ Asignación (DOMINIO)
+                var asignacion = new AlumnoGrupo(alumnoCreado.Id, grupo.Id);
 
-        // 🔟 Persistir asignación
-        await _alumnoGrupoRepository.CreateAsync(asignacion);
+                // 🔟 Persistir asignación
+                await _alumnoGrupoRepository.CreateAsync(asignacion);
 
-        await transaction.CommitAsync();
+                await transaction.CommitAsync();
 
-        return alumnoCreado;
-    }
-    catch
-    {
-        await transaction.RollbackAsync();
-        throw;
-    }
-}
+                return alumnoCreado;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
 
         public async Task<IEnumerable<Alumno>> GetAllAsync()
         {

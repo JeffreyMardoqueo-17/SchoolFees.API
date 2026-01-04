@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SchoolFees.EN.Models;
 
 namespace SchoolFees.EN.models
 {
@@ -25,5 +26,6 @@ namespace SchoolFees.EN.models
         public string Nombre { get; set; } = string.Empty;
         public int AnioEscolar { get; set; }
         public bool Estado { get; set; } = true;
+        public ICollection<AlumnoGrupo> Grupos { get; private set; } = new List<AlumnoGrupo>();
     }
 }

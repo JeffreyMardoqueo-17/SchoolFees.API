@@ -35,6 +35,9 @@ builder.Services.AddScoped<IRolService, RolService>();
 builder.Services.AddScoped<IAdministradorRepository, AdministradorRepository>();
 builder.Services.AddScoped<IAdministradorService, AdministradorService>();
 
+builder.Services.AddScoped<IAdministradorRolRepository, AdministradorRolRepository>();
+builder.Services.AddScoped<IAdministradorRolService, AdministradorRolService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

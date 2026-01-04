@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SchoolFees.EN.Models;
 
 namespace SchoolFees.EN.models
 {
@@ -35,6 +36,8 @@ namespace SchoolFees.EN.models
         public int? CreadoPor { get; set; }
         public int? ModificadoPor { get; set; }
         public DateTime? FechaModificacion { get; set; }
+        public ICollection<AlumnoGrupo> Grupos { get; private set; } = new List<AlumnoGrupo>();
+
     }
 
 }

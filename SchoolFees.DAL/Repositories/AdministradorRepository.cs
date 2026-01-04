@@ -34,7 +34,9 @@ namespace SchoolFees.DAL.Repositories
         public async Task<Administrador?> GetByCorreoAsync(string correo)
         {
             return await _context.Administrador
-                .FirstOrDefaultAsync(a => a.Correo == correo);
+        .Include(a => a.Roles)
+            .ThenInclude(ar => ar.Rol)
+        .FirstOrDefaultAsync(a => a.Correo == correo);
         }
 
         public async Task CreateAsync(Administrador administrador)

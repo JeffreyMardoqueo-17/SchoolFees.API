@@ -13,9 +13,11 @@ namespace SchoolFees.BL.Services
     public class AdministradorService : IAdministradorService
     {
         private readonly IAdministradorRepository _administradorRepository;
-        public AdministradorService(IAdministradorRepository administradorRepository)
+        private readonly IAdministradorRolService _administradorRolService;
+        public AdministradorService(IAdministradorRepository administradorRepository, IAdministradorRolService administradorRolService)
         {
             _administradorRepository = administradorRepository;
+            _administradorRolService = administradorRolService;
         }
         public async Task<IEnumerable<Administrador>> GetAllAsync()
         {
@@ -69,6 +71,7 @@ namespace SchoolFees.BL.Services
 
             // 5️⃣ Persistencia
             await _administradorRepository.CreateAsync(administrador);
+            await _administradorRolService.AsignarRolesAsync(administrador.Id, rolesIds);
         }
 
         public async Task<Administrador> LoginAsync(string correo, string password, string ip)
