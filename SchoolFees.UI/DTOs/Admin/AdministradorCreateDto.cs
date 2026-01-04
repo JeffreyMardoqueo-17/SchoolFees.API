@@ -27,7 +27,7 @@ namespace SchoolFees.UI.DTOs.Admin
 //   "nombres": "Jeffrey Mardoqueo",
 //   "apellidos": "Jimenez Santos",
 //   "correo": "jeffreymardoqueo260@gmail.com",
-//   "password": "***",
+//   "password": "",
 //   "rolesIds": [1],
 //   "creadoPor": null
 // }

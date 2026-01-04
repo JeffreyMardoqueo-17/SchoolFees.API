@@ -18,38 +18,37 @@ namespace SchoolFees.DAL.Context
 
         //adminsitracion
         public DbSet<Administrador> Administrador { get; set; } = null!;
-
+        public DbSet<AdministradorRol> AdministradorRol { get; set; } = null!;
 
         /// <summary>
         /// administracion
         /// </summary>
         public DbSet<Rol> Rol { get; set; } = null!;
-        
+
 
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // AlumnoGrupo (ya lo tenías bien)
             modelBuilder.Entity<AlumnoGrupo>()
                 .HasKey(ag => new { ag.IdAlumno, ag.IdGrupo });
-            modelBuilder.Entity<AlumnoGrupo>(entity =>
-            {
-                entity.HasKey(e => new { e.IdAlumno, e.IdGrupo });
 
-                entity.Property(e => e.FechaAsignacion)
-                    .HasDefaultValueSql("GETDATE()");
+            // 🔥 AdministradorRol (ESTO ARREGLA TODO)
+            modelBuilder.Entity<AdministradorRol>()
+                .HasKey(ar => new { ar.IdAdministrador, ar.IdRol });
 
-                entity.HasOne<Alumno>()
-                    .WithMany()
-                    .HasForeignKey(e => e.IdAlumno)
-                    .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AdministradorRol>()
+                .HasOne(ar => ar.Administrador)
+                .WithMany(a => a.Roles)
+                .HasForeignKey(ar => ar.IdAdministrador);
 
-                entity.HasOne<Grupo>()
-                    .WithMany()
-                    .HasForeignKey(e => e.IdGrupo)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-
+            modelBuilder.Entity<AdministradorRol>()
+                .HasOne(ar => ar.Rol)
+                .WithMany()
+                .HasForeignKey(ar => ar.IdRol);
         }
+
     }
 }

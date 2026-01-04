@@ -21,6 +21,7 @@ namespace SchoolFees.UI.Middleware
             try
             {
                 await _next(context);
+                Console.WriteLine("el servidor arranco super goood!");
             }
             catch (BusinessException ex)
             {
@@ -31,17 +32,21 @@ namespace SchoolFees.UI.Middleware
                 {
                     error = ex.Message
                 });
+                Console.WriteLine("Error de negocio");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
 
                 await context.Response.WriteAsJsonAsync(new
                 {
-                    error = "Error interno del servidor"
+                    error = ex.Message,
+                    stack = ex.StackTrace
                 });
+                Console.WriteLine("Error de lado del servidor");
             }
+
         }
     }
 }
